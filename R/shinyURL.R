@@ -24,9 +24,9 @@ encodeShinyURL = function(session, input) {
 #' @param nestedDependency set to \code{TRUE} if you use reactive UI
 #' @param self self-reference
 #' @param encode reference to the URL encoder object
-#' @param resume objects (Observers) which start in a suspended state and need to be resumed after initialization finishes 
+#' @param resume list of observers which start in a suspended state and need to be resumed after initialization finishes 
 #' @export
-initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = encode) {
+initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = list(encode)) {
   observe({
     # execute only once at startup
     self$suspend()
