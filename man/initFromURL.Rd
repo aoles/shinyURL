@@ -4,10 +4,10 @@
 \title{Initialize application state from URL}
 \usage{
 initFromURL(session, nestedDependency = FALSE, self, encode,
-  resume = encode)
+  resume = list(encode))
 }
 \arguments{
-\item{session}{parameter passed from the shiny "server function"}
+\item{session}{parameter passed from the \code{shinyServer} function}
 
 \item{nestedDependency}{set to \code{TRUE} if you use reactive UI}
 
@@ -15,7 +15,7 @@ initFromURL(session, nestedDependency = FALSE, self, encode,
 
 \item{encode}{reference to the URL encoder object}
 
-\item{resume}{objects (Observers) which start in a suspended state and need to be resumed after initialization finishes}
+\item{resume}{list of observers which start in a suspended state and need to be resumed after initialization finishes}
 }
 \description{
 Initialize application state from URL

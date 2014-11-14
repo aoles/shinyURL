@@ -17,6 +17,6 @@
 
         init = initFromURL(session, self = init, encode = encode)
         
-        encode = encodeShinyURL(session, input)
+        encode = encodeShinyURL(session)
         
     Note that you need to provide a self reference and a reference to the 'encodeShinyURL' object in the call to 'initFromURL'.

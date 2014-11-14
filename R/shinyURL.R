@@ -1,12 +1,22 @@
 #' Encode current application state into URL
-#' @param session parameter passed from the shiny "server function"
-#' @param input parameter passed from the shiny "server function"
+#' @param session parameter passed from the \code{shinyServer} function
 #' @import shiny
 #' @export 
-encodeShinyURL = function(session, input) {
+encodeShinyURL = function(session) {
   observe({
   ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
-  inputValues = reactiveValuesToList(input, all.names = FALSE)
+  inputValues = reactiveValuesToList(session$input, all.names = FALSE)
+  
+  ## discard group inputs as their elements already have individual IDS
+  inputValues = inputValues[sapply(inputValues, length) == 1]
+  
+  ## compress TRUE/FALSE to T/F
+  inputValues = lapply(inputValues, function(x) {
+    if ( is.logical(x) ) {
+      if (isTRUE(x)) "T" else "F"
+    } else x  
+  })
+  
   updateTextInput(session, ".url", value = paste0(
     session$clientData$url_protocol, "//",
     session$clientData$url_hostname,
@@ -20,7 +30,7 @@ encodeShinyURL = function(session, input) {
 }
 
 #' Initialize application state from URL
-#' @param session parameter passed from the shiny "server function"
+#' @param session parameter passed from the \code{shinyServer} function
 #' @param nestedDependency set to \code{TRUE} if you use reactive UI
 #' @param self self-reference
 #' @param encode reference to the URL encoder object
