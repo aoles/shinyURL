@@ -1,13 +1,33 @@
-#' Encode current application state into URL
+#' Save and restore the state of a Shiny App
+#' 
+#' Encode the state of a Shiny application into an URL and use URL parameters to initialize the app.
 #' @param session parameter passed from the \code{shinyServer} function
+#' @param nestedDependency set to \code{TRUE} if you use reactive UI
+#' @param resume list of observers which start in a suspended state and need to be resumed after initialization completes
+#' @param inputId id of the textfield containing the encoded URL
 #' @import shiny
 #' @export 
-encodeShinyURL = function(session) {
+shinyURL = function(session, nestedDependency = FALSE, resume = NULL, inputId = ".url") {
+  encode = .encodeURL(session)
+  init = .initFromURL(session, nestedDependency, init, encode, c(encode, resume))
+}
+
+#' Encode current application state into URL
+#' @param session parameter passed from the \code{shinyServer} function
+#' @param input parameter passed from the \code{shinyServer} function
+#' @note This function has been deprecated. Please use \code{\link{shinyURL}} instead.
+#' @export
+encodeShinyURL = function(session, input) {
+  .Deprecated("shinyURL")
+  .encodeURL(session)
+}
+  
+.encodeURL = function(session) {
   observe({
   ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
   inputValues = reactiveValuesToList(session$input, all.names = FALSE)
   
-  ## discard group inputs as their elements already have individual IDS
+  ## discard group inputs as their elements already have individual IDs
   inputValues = inputValues[sapply(inputValues, length) == 1]
   
   ## compress TRUE/FALSE to T/F
@@ -34,9 +54,16 @@ encodeShinyURL = function(session) {
 #' @param nestedDependency set to \code{TRUE} if you use reactive UI
 #' @param self self-reference
 #' @param encode reference to the URL encoder object
-#' @param resume list of observers which start in a suspended state and need to be resumed after initialization finishes 
+#' @param resume list of observers which start in a suspended state and need to be resumed after initialization finishes
+#' @note This function has been deprecated. Please use \code{\link{shinyURL}} instead.
 #' @export
-initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = list(encode)) {
+initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = NULL) {
+  .Deprecated("shinyURL")
+  .initFromURL(session, nestedDependency, self, encode, resume)
+}
+
+.initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = NULL) {
+  #.Deprecated("shinyURL$new()", msg = "The interface of shinyURL has been overhauled.")
   observe({
     # execute only once at startup
     self$suspend()

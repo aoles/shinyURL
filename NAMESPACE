@@ -2,4 +2,5 @@
 
 export(encodeShinyURL)
 export(initFromURL)
+export(shinyURL)
 import(shiny)

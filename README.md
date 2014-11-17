@@ -5,18 +5,17 @@
 
 ## Use
 
-1. Add to 'server.R' and 'ui.R'
-    
+1. Add to 'server.R'
+
         library('shinyURL')
-
-2. Add the textfield for the URL to 'ui.R'
-
-        textInput(".url", "", value = "")
-
-3. To 'server.R' add the following
-
-        init = initFromURL(session, self = init, encode = encode)
         
-        encode = encodeShinyURL(session)
+    and inside the `shinyServer` function the following line
+    
+        shinyURL(session)
         
-    Note that you need to provide a self reference and a reference to the 'encodeShinyURL' object in the call to 'initFromURL'.
+    where `session` is the argument passed to the server function.
+        
+
+2. Add the textfield containing the URL to 'ui.R'
+
+        textInput(".url")        

@@ -3,8 +3,7 @@
 \alias{initFromURL}
 \title{Initialize application state from URL}
 \usage{
-initFromURL(session, nestedDependency = FALSE, self, encode,
-  resume = list(encode))
+initFromURL(session, nestedDependency = FALSE, self, encode, resume = NULL)
 }
 \arguments{
 \item{session}{parameter passed from the \code{shinyServer} function}
@@ -19,5 +18,8 @@ initFromURL(session, nestedDependency = FALSE, self, encode,
 }
 \description{
 Initialize application state from URL
+}
+\note{
+This function ha been deprecated. Please use \code{\link{shinyURL}} instead.
 }
 
