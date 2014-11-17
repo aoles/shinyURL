@@ -5,11 +5,11 @@
 
 ## Use
 
-1. Add to 'server.R'
+1. Add to 'server.R' the following lines:
 
         library('shinyURL')
         
-    and inside the `shinyServer` function the following line
+    and inside the `shinyServer` function a call to
     
         shinyURL(session)
         
@@ -18,4 +18,4 @@
 
 2. Add the textfield containing the URL to 'ui.R'
 
-        textInput(".url")        
+        textInput(".url", "")
