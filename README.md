@@ -5,7 +5,7 @@
 
 ## Use
 
-1. Add to 'server.R' the following lines:
+1. Add to 'server.R' the following line
 
         library('shinyURL')
         
