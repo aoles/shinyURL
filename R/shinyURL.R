@@ -27,8 +27,28 @@ encodeShinyURL = function(session, input) {
   ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
   inputValues = reactiveValuesToList(session$input, all.names = FALSE)
   
-  ## discard group inputs as their elements already have individual IDs
-  inputValues = inputValues[sapply(inputValues, length) == 1]
+  ## discard individual elements of CheckboxGroups and expand CheckboxGroup vectors
+  names = names(inputValues)
+  i = 0
+  addValues = NULL
+  while (i < length(names) ) {        
+    i = i+1
+    n = names[i]
+    idx = grep(sprintf("^%s[0-9]+", n), names)
+    
+    ## encountered CheckboxGroup
+    if ( length(idx)>0 ) {
+      value = inputValues[[n]]
+      names = names[-c(i, idx)]
+      if ( !is.null(value) ) {
+        values = as.list(value)
+        names(values) = sprintf("%s[%s]", n, seq_along(value))
+        addValues = c(addValues, values)
+      }
+    }
+  }
+  inputValues = inputValues[names]
+  inputValues = c(inputValues, addValues)
   
   ## compress TRUE/FALSE to T/F
   inputValues = lapply(inputValues, function(x) {
@@ -68,7 +88,7 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     # execute only once at startup
     self$suspend()
       
-    query = parseQueryString(session$clientData$url_search)
+    query = parseQueryString(session$clientData$url_search, nested=TRUE)
     
     #initial pass needed due to nested dependency of concentration on drug 
     if ( isTRUE(nestedDependency) ) .initInputs(session, query)

@@ -20,6 +20,6 @@ initFromURL(session, nestedDependency = FALSE, self, encode, resume = NULL)
 Initialize application state from URL
 }
 \note{
-This function ha been deprecated. Please use \code{\link{shinyURL}} instead.
+This function has been deprecated. Please use \code{\link{shinyURL}} instead.
 }
 

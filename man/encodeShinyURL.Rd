@@ -14,6 +14,6 @@ encodeShinyURL(session, input)
 Encode current application state into URL
 }
 \note{
-This function ha been deprecated. Please use \code{\link{shinyURL}} instead.
+This function has been deprecated. Please use \code{\link{shinyURL}} instead.
 }
 
