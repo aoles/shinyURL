@@ -7,7 +7,7 @@
 
 1. Add to 'server.R' the following line
 
-        library('shinyURL')
+        library("shinyURL")
         
     and inside the `shinyServer` function a call to
     
@@ -20,7 +20,7 @@
 
         textInput(".url", "Share URL")
 
-## Advice
+## Caveats
 
 The state of a shiny app gets saved by encoding its input values into an URL. To keep the URL compact and to avoid problems caused by the URL length limit (around 2000 characters) there are some points to keep in mind when developing your app.
 
