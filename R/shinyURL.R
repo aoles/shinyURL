@@ -8,7 +8,7 @@
 #' @import shiny
 #' @export 
 shinyURL = function(session, nestedDependency = FALSE, resume = NULL, inputId = ".url") {
-  encode = .encodeURL(session)
+  encode = .encodeURL(session, inputId)
   init = .initFromURL(session, nestedDependency, init, encode, c(encode, resume))
 }
 
@@ -22,7 +22,7 @@ encodeShinyURL = function(session, input) {
   .encodeURL(session)
 }
   
-.encodeURL = function(session) {
+.encodeURL = function(session, inputId) {
   observe({
   ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
   inputValues = reactiveValuesToList(session$input, all.names = FALSE)
@@ -57,7 +57,7 @@ encodeShinyURL = function(session, input) {
     } else x  
   })
   
-  updateTextInput(session, ".url", value = paste0(
+  updateTextInput(session, inputId, value = paste0(
     session$clientData$url_protocol, "//",
     session$clientData$url_hostname,
     ## add port number if present
@@ -91,13 +91,13 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     query = parseQueryString(session$clientData$url_search, nested=TRUE)
     
     #initial pass needed due to nested dependency of concentration on drug 
-    if ( isTRUE(nestedDependency) ) .initInputs(session, query)
+    #if ( isTRUE(nestedDependency) ) .initInputs(session, query)
     
+    .initInputs(session, query)
     session$onFlushed( function() {
-      .initInputs(session, query)
       for(i in resume) i$resume()
     })
-  })
+  }, priority = 100)
 }
 
 .initInputs = function(session, query) {

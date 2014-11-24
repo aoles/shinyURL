@@ -18,9 +18,9 @@
 
 2. Add the text field containing the URL to 'ui.R'
 
-        textInput(".url", "")
+        textInput(".url", "Share URL")
 
-## Tips and Tricks
+## Advice
 
 The state of a shiny app gets saved by encoding its input values into an URL. To keep the URL compact and to avoid problems caused by the URL length limit (around 2000 characters) there are some points to keep in mind when developing your app.
 
