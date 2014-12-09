@@ -3,17 +3,12 @@
 \alias{shinyURL}
 \title{Save and restore the state of a Shiny App}
 \usage{
-shinyURL(session, nestedDependency = FALSE, resume = NULL,
-  inputId = ".url")
+shinyURL(session, inputId = ".url")
 }
 \arguments{
 \item{session}{parameter passed from the \code{shinyServer} function}
 
-\item{nestedDependency}{set to \code{TRUE} if you use reactive UI}
-
-\item{resume}{list of observers which start in a suspended state and need to be resumed after initialization completes}
-
-\item{inputId}{id of the textfield containing the encoded URL}
+\item{inputId}{id of the text field containing the encoded URL}
 }
 \description{
 Encode the state of a Shiny application into an URL and use URL parameters to initialize the app.

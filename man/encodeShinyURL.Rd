@@ -3,12 +3,10 @@
 \alias{encodeShinyURL}
 \title{Encode current application state into URL}
 \usage{
-encodeShinyURL(session, input)
+encodeShinyURL(session)
 }
 \arguments{
 \item{session}{parameter passed from the \code{shinyServer} function}
-
-\item{input}{parameter passed from the \code{shinyServer} function}
 }
 \description{
 Encode current application state into URL
