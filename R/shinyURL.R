@@ -8,6 +8,9 @@
 #' @import shiny
 #' @export 
 shinyURL = function(session, nestedDependency = FALSE, resume = NULL, inputId = ".url") {
+  .inputValues <<- reactive(reactiveValuesToList(session$input, all.names = FALSE))
+  .queryValues <<- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
+  
   encode = .encodeURL(session, inputId)
   init = .initFromURL(session, nestedDependency, init, encode, c(encode, resume))
 }
@@ -21,11 +24,11 @@ encodeShinyURL = function(session, input) {
   .Deprecated("shinyURL")
   .encodeURL(session)
 }
-  
+
 .encodeURL = function(session, inputId) {
   observe({
   ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
-  inputValues = reactiveValuesToList(session$input, all.names = FALSE)
+  inputValues = .inputValues()
   
   ## discard individual elements of CheckboxGroups and expand CheckboxGroup vectors
   names = names(inputValues)
@@ -66,7 +69,7 @@ encodeShinyURL = function(session, input) {
     ## encode widget state
     "?", paste(names(inputValues), inputValues, sep = "=", collapse = "&") 
     ))
-  }, priority = -100, suspended = TRUE)
+  }, priority = -100)
 }
 
 #' Initialize application state from URL
@@ -82,22 +85,35 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
   .initFromURL(session, nestedDependency, self, encode, resume)
 }
 
+
+
 .initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = NULL) {
   #.Deprecated("shinyURL$new()", msg = "The interface of shinyURL has been overhauled.")
   observe({
-    # execute only once at startup
-    self$suspend()
-      
-    query = parseQueryString(session$clientData$url_search, nested=TRUE)
+    ## suspend if nothing to do 
+    if ( length(.queryValues) == 0L ) {
+      self$suspend()
+      return(NULL)
+    }
     
-    #initial pass needed due to nested dependency of concentration on drug 
-    #if ( isTRUE(nestedDependency) ) .initInputs(session, query)
+    inputValues = 
+    ## iterate through available inputs as long as there are any uninitialized values in .queryValues
+    ## the expression below depends on inputs which is neccassary to restore dynamic UIs  
+    updateValues = intersect(names(.inputValues()), names(.queryValues))
+    idx = match(updateValues, names(.queryValues))
+    updateValues = .queryValues[idx]
     
-    .initInputs(session, query)
+    if ( length(idx) > 0 ) .queryValues <<- .queryValues[-idx]
+   
+    .initInputs(session, updateValues)
+    
     session$onFlushed( function() {
+      
+      #.initInputs(session, query)
       for(i in resume) i$resume()
     })
-  }, priority = 100)
+    invisible(NULL)
+  })
 }
 
 .initInputs = function(session, query) {
