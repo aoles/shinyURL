@@ -29,6 +29,7 @@ encodeShinyURL = function(session) {
 .encodeURL = function(session, inputId) {
   observe({
   #browser()
+  cat("encode\n")
   ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
   inputValues = .inputValues()
   
@@ -86,7 +87,7 @@ encodeShinyURL = function(session) {
   )
   
   updateTextInput(session, inputId, value = url)
-  }, priority = -100)
+  }, priority = -999)
 }
 
 #' Initialize application state from URL
@@ -105,8 +106,10 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
 .initFromURL = function(session, self) {
   observe({
     #browser()
+    cat("init\n")
     ## suspend if nothing to do 
     if ( length(.queryValues) == 0L ) {
+      cat("suspend\n")
       self$suspend()
       return(NULL)
     }
@@ -114,6 +117,7 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     ## iterate through available inputs as long as there are any uninitialized values in .queryValues
     ## the expression below depends on inputs which is neccassary to restore dynamic UIs  
     updateValues = intersect(names(.inputValues()), names(.queryValues))
+    cat(updateValues, "\n") 
     idx = match(updateValues, names(.queryValues))
     updateValues = .queryValues[idx]
 
@@ -127,7 +131,7 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     })
     
     invisible(NULL)
-  })
+  }, priority = -99)
 }
 
 .initInputs = function(session, query) {
