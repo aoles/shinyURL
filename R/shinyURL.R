@@ -6,13 +6,7 @@
 #' @import shiny
 #' @export
 shinyURL = function(session, inputId=".url") {
-  .inputValues <<- reactive({
-    inputValues = reactiveValuesToList(session$input, all.names=FALSE)
-    ## remove ggvis specific inputs
-    idx = grep("_mouse_(over|out)$", names(inputValues))
-    if ( length(idx) > 0 ) inputValues = inputValues[-idx]
-    inputValues})
-  .queryValues <<- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
+  session$queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
   
   ## initialize from query string
   init = .initFromURL(session, init)
@@ -34,7 +28,10 @@ encodeShinyURL = function(session) {
 .encodeURL = function(session, inputId) {
   observe({
     ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
-    inputValues = .inputValues()
+    inputValues = reactiveValuesToList(session$input, all.names=FALSE)
+    ## remove ggvis specific inputs
+    idx = grep("_mouse_(over|out)$", names(inputValues))
+    if ( length(idx) > 0 ) inputValues = inputValues[-idx]
     
     ## NOTE: the default values of checkbox groups are encoded as TRUE/FALSE
     ## values of individual elements named as checkboxGroupNameX, where X is the
@@ -104,19 +101,22 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
 
 .initFromURL = function(session, self) {
   observe({
+    queryValues = session$queryValues
     ## suspend if nothing to do
-    if ( length(.queryValues) == 0L ) {
+    if ( length(queryValues) == 0L ) {
       self$suspend()
       return(NULL)
     }
     
-    ## iterate through available inputs as long as there are any uninitialized values in .queryValues
+    ## iterate through available inputs as long as there are any uninitialized values in queryValues
     ## the expression below depends on inputs which is neccassary to restore dynamic UIs
-    updateValues = intersect(names(.inputValues()), names(.queryValues))
-    idx = match(updateValues, names(.queryValues))
-    updateValues = .queryValues[idx]
+    inputValues = reactiveValuesToList(session$input, all.names=FALSE)
     
-    if ( length(idx) > 0 ) .queryValues <<- .queryValues[-idx]
+    updateValues = intersect(names(inputValues), names(queryValues))
+    idx = match(updateValues, names(queryValues))
+    updateValues = queryValues[idx]
+    
+    if ( length(idx) > 0 ) session$queryValues = queryValues[-idx]
     
     ## schedule the update only after all input messages have been sent out (see
     ## the 'flushOutput' function in shiny.R). This is to avoid potential
