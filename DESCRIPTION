@@ -1,7 +1,7 @@
 Package: shinyURL
 Type: Package
 Title: Save and restore the state of shiny apps
-Version: 0.0.9
+Version: 0.0.10
 Author: Andrzej Oles
 Maintainer: Andrzej Oles <andrzej.oles@embl.de>
 Description: Save and restore the state of shiny apps by encoding it in the app's URL
