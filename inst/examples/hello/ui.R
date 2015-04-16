@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyURL)
 
 shinyUI(fluidPage(
 
@@ -13,7 +14,7 @@ shinyUI(fluidPage(
                   min = 1,
                   max = 50,
                   value = 30),
-      textInput(".url", "Share URL")
+      shinyURL.UI(copy=FALSE, tinyURL=FALSE)
     ),
 
     # Show a plot of the generated distribution

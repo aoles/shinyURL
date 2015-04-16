@@ -2,7 +2,7 @@ library(shiny)
 library(shinyURL)
 
 shinyServer(function(input, output, session) {
-  shinyURL(session)
+  shinyURL.Server(session)
   
   output$distPlot <- renderPlot({
 

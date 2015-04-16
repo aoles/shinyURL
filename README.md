@@ -5,20 +5,19 @@
 
 ## Use
 
-1. Add to 'server.R' the following line
+1. Load the package in both 'server.R' an 'ui.R':
 
         library("shinyURL")
-        
-    and inside the `shinyServer` function a call to
+
+2. Add a call to
     
-        shinyURL(session)
+        shinyURL.Server(session)
         
-    where `session` is the argument passed to the server function.
+    inside the `shinyServer` function in 'server.R', where `session` is the argument passed to the server function.
         
+3. Add the shinyURL widget to 'ui.R':
 
-2. Add the text field containing the URL to 'ui.R'
-
-        textInput(".url", "Share URL")
+        shinyURL.UI()
 
 ## Caveats
 

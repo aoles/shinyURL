@@ -1,11 +1,57 @@
-#' Save and restore the state of a Shiny App
+#' Save and restore the state of Shiny app's widgets
 #' 
-#' Encode the state of a Shiny application into an URL and use URL parameters to initialize the app.
-#' @param session parameter passed from the \code{shinyServer} function
-#' @param inputId id of the text field containing the encoded URL
-#' @import shiny
+#' Encode the state of Shiny app's widgets into an URL query string, and use parameters from the URL query string to initialize the applications.
+#' 
+#' @section Quick setup:
+#' To start using shinyURL in your Shiny app, follow these three steps:
+#' \enumerate{
+#'   \item Load the package in both 'server.R' an 'ui.R': \code{library("shinyURL")}
+#'   \item Add a call to \code{ shinyURL.Server(session)} inside the 'shinyServer' function in 'server.R',
+#'   where `session` is the argument passed to the server function.
+#'   \item Add the \code{shinyURL.UI()} widget to 'ui.R'.
+#' }
+#' @author Andrzej Oleś <andrzej.oles@@embl.de>
+#' @examples
+#' if (interactive()) {
+#'   shinyApp(
+#'     ui = fluidPage(
+#'       titlePanel("Hello Shiny!"),
+#'       sidebarLayout(
+#'         sidebarPanel(
+#'           sliderInput("bins", "Number of bins:", min = 1,  max = 50, value = 30),
+#'           shinyURL.UI()
+#'         ),
+#'         mainPanel(
+#'           plotOutput("plot")
+#'         )
+#'       )
+#'     ),
+#'     server = function(input, output, session) {
+#'       shinyURL.Server(session)
+#'       output$plot <- renderPlot({
+#'         x <- faithful[, 2]
+#'         bins <- seq(min(x), max(x), length.out = input$bins + 1)
+#'         hist(x, breaks = bins, col = 'darkgray', border = 'white')
+#'       })
+#'     }
+#'   )
+#' }
+#' 
+#' @name shinyURL
+#' @importFrom shiny isolate observe parseQueryString observeEvent updateTextInput eventReactive reactiveValuesToList
+#' @importFrom shiny tagList textInput tags icon includeScript actionButton
+#' @importFrom RCurl getURL
+NULL
+
+inputId=".shinyURL"
+
+#' @details The \code{shinyURL.Server} method contains server logic for encoding
+#'   and restoring the widgets' state. It is called from inside the app's server
+#'   function with the \code{session} argument.
+#' @param session Parameter passed from the Shiny server function
+#' @rdname shinyURL
 #' @export
-shinyURL = function(session, inputId=".url") {
+shinyURL.Server = function(session) {
   session$queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
   
   ## initialize from query string
@@ -13,17 +59,57 @@ shinyURL = function(session, inputId=".url") {
   ## encode current app's state
   .encodeURL(session, inputId)
   
+  ## use TinyURL for shortening URL
+  useTinyURL = ".getTinyURL" %in% names(isolate(reactiveValuesToList(session$input, all.names=TRUE)))
+  
+  if ( useTinyURL ) {
+    input = session$input
+    .busyMsg = "Please wait..."
+    
+    observeEvent( input$.getTinyURL, updateTextInput(session, inputId, value=.busyMsg) )
+    
+    tinyURLquery = eventReactive(input$.getTinyURL, sprintf("http://tinyurl.com/api-create.php?url=%s", input[[inputId]]) )
+    
+    observe({
+      if ( is.null(tinyURLquery()) ) 
+        return()
+      if ( input[[inputId]]==.busyMsg ) {
+        tinyurl = tryCatch(getURL(tinyURLquery()), error = function(e) "Error fetching tinyURL!")
+        updateTextInput(session, inputId, value=tinyurl)
+      }
+    })
+  }
+  
   invisible(NULL)
 }
 
-#' Encode current application state into URL
-#' @param session parameter passed from the \code{shinyServer} function
-#' @note This function has been deprecated. Please use \code{\link{shinyURL}} instead.
+#' @details The \code{shinyURL.UI} inserts a text field widget containing an URL to
+#'   the app's current view.  By default it also features the convenience 'Copy'
+#'   button copying the URL to clipboard, and a 'TinyURL' button querying the 
+#'   URL shortening web service.  The inclusion of these buttons is optional and
+#'   can be controlled by the \code{copyURL} and \code{tinyURL} arguments, 
+#'   respectively.
+#' @param label Label for the URL field
+#' @param copyURL Include a 'Copy' button for convenient copying to clipboard
+#' @param tinyURL Use the TinyURL web service for shortening the URL
+#' @rdname shinyURL
 #' @export
-encodeShinyURL = function(session) {
-  .Deprecated("shinyURL")
-  .encodeURL(session)
-}
+shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
+  textInput(inputId, label),
+  if ( isTRUE(copyURL) )
+    tagList(
+      tags$button(id=".copy", icon("clipboard"), "Copy", title="Copy to clipboard", type="button", class="btn btn-default", "data-clipboard-target"=inputId),
+      includeScript(system.file("zeroclipboard", "ZeroClipboard.min.js", package="shinyURL")),
+      tags$script(type="text/javascript",
+                  paste(collapse="\n", c("",
+                                         "ZeroClipboard.config( { swfPath: 'http://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf' } );",
+                                         "var client = new ZeroClipboard( document.getElementById('.copy') );",
+                                         ""))
+      )
+    ),
+  if ( isTRUE(tinyURL) )
+    actionButton(".getTinyURL", "TinyURL", icon=icon("compress"), title="Shorten URL")
+)
 
 .encodeURL = function(session, inputId) {
   observe({
@@ -84,19 +170,6 @@ encodeShinyURL = function(session) {
     
     updateTextInput(session, inputId, value = url)
   }, priority = -999)
-}
-
-#' Initialize application state from URL
-#' @param session parameter passed from the \code{shinyServer} function
-#' @param nestedDependency set to \code{TRUE} if you use reactive UI
-#' @param self self-reference
-#' @param encode reference to the URL encoder object
-#' @param resume list of observers which start in a suspended state and need to be resumed after initialization finishes
-#' @note This function has been deprecated. Please use \code{\link{shinyURL}} instead.
-#' @export
-initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = NULL) {
-  .Deprecated("shinyURL")
-  .initFromURL(session, self)
 }
 
 .initFromURL = function(session, self) {
