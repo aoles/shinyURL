@@ -38,7 +38,7 @@
 #' }
 #' 
 #' @name shinyURL
-#' @importFrom shiny isolate observe parseQueryString observeEvent updateTextInput eventReactive reactiveValuesToList
+#' @importFrom shiny isolate observe parseQueryString observeEvent updateTextInput eventReactive reactiveValuesToList invalidateLater
 #' @importFrom shiny tagList textInput tags icon includeScript actionButton
 #' @importFrom RCurl getURL
 NULL
