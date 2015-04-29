@@ -41,6 +41,7 @@
 #' @importFrom shiny isolate observe parseQueryString observeEvent updateTextInput eventReactive reactiveValuesToList invalidateLater
 #' @importFrom shiny tagList textInput tags icon includeScript actionButton
 #' @importFrom RCurl getURL
+#' @importFrom utils URLencode
 NULL
 
 inputId=".shinyURL"
@@ -169,7 +170,7 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
       } else x
     })
     
-    url = paste0(
+    url = URLencode(paste0(
       session$clientData$url_protocol, "//",
       session$clientData$url_hostname,
       ## add port number if present
@@ -177,7 +178,7 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
       session$clientData$url_pathname,
       ## encode widget state
       "?", paste(names(inputValues), inputValues, sep = "=", collapse = "&")
-    )
+    ))
     
     updateTextInput(session, inputId, value = url)
   }, priority = -999)
