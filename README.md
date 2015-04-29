@@ -5,15 +5,15 @@
 
 ## Use
 
-1. Load the package in both 'server.R' an 'ui.R':
+1. Load the package in both 'server.R' and 'ui.R':
 
         library("shinyURL")
 
-2. Add a call to
+2. In 'server.R', add a call to
     
         shinyURL.Server(session)
         
-    inside the `shinyServer` function in 'server.R', where `session` is the argument passed to the server function.
+    inside the `shinyServer` function, where `session` is the argument passed to the server function.
         
 3. Add the shinyURL widget to 'ui.R':
 

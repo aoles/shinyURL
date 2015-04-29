@@ -80,7 +80,18 @@ shinyURL.Server = function(session) {
     })
   }
   
+  ## Initial invalidation needed to execute scheduled input updates when the browser is refreshed
+  invalidate = .invalidateOnInit(session, invalidate)
+    
   invisible(NULL)
+}
+
+.invalidateOnInit = function(session, self) {
+  observe({
+    cat("Invalidate\n")
+    invalidateLater(0, session)
+    self$suspend()
+  })
 }
 
 #' @details The \code{shinyURL.UI} inserts a text field widget containing an URL to
@@ -212,6 +223,9 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
       ## decode TRUE/FALSE
       else if ( isTRUE(grepl("^[TF]$", q)) )
         q = as.logical(q)
+    }
+    else {
+      q = unname(q)
     }
     session$sendInputMessage(names(query)[i], list(value=q))
   }
