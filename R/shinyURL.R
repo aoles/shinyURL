@@ -82,7 +82,8 @@ shinyURL.Server = function(session) {
   }
   
   ## Initial invalidation needed to execute scheduled input updates when the browser is refreshed
-  invalidate = .invalidateOnInit(session, invalidate)
+  # switched off because it interferes with dynamic UIs
+  # invalidate = .invalidateOnInit(session, invalidate)
     
   invisible(NULL)
 }
@@ -163,11 +164,19 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
     inputValues = inputValues[names]
     inputValues = c(inputValues, addValues)
     
-    ## encode TRUE/FALSE as T/F
     inputValues = lapply(inputValues, function(x) {
-      if ( is.logical(x) ) {
-        if (isTRUE(x)) "T" else "F"
-      } else x
+      if (length(x) == 1L) {
+        ## encode TRUE/FALSE as T/F
+        if ( is.logical(x) ) {
+          if (isTRUE(x)) "T" else "F"
+        }
+        else x
+      }
+      else {
+        ## encode vectors as comma separated lists
+        if (class(x)=="Date") x = as.integer(x)
+        paste(x, collapse=",")
+      }
     })
     
     url = URLencode(paste0(
@@ -196,38 +205,46 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
     ## iterate through available inputs as long as there are any uninitialized values in queryValues
     ## the expression below depends on inputs which is neccassary to restore dynamic UIs
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
-    
     updateValues = intersect(names(inputValues), names(queryValues))
-    idx = match(updateValues, names(queryValues))
-    updateValues = queryValues[idx]
+    queryIds = match(updateValues, names(queryValues))
+    inputIds = match(updateValues, names(inputValues))
     
-    if ( length(idx) > 0 ) session$queryValues = queryValues[-idx]
+    if ( length(queryIds) > 0 ) session$queryValues = queryValues[-queryIds]
     
     ## schedule the update only after all input messages have been sent out (see
     ## the 'flushOutput' function in shiny.R). This is to avoid potential
     ## overwriting by some update events from user code
     session$onFlushed(function() {
-      .initInputs(session, updateValues)
+      .initInputs(session, queryValues[queryIds], inputValues[inputIds])
     })
     
     invisible(NULL)
   }, priority = -99)
 }
 
-.initInputs = function(session, query) {
-  for (i in seq_along(query)) {
-    q = query[[i]]
-    if (!is.list(q)) {
-      ## parse numeric vectors (needed by range sliders)
-      if ( isTRUE(grepl("^c\\( *([[:digit:]]+, *)*[[:digit:]]+ *\\)$", q)) )
-        q = eval(parse(text=q))
-      ## decode TRUE/FALSE
-      else if ( isTRUE(grepl("^[TF]$", q)) )
-        q = as.logical(q)
+.initInputs = function(session, queryValues, inputValues) {
+  for (i in seq_along(queryValues)) {
+    q = queryValues[[i]]
+    
+    q = if (is.list(q)) {
+      ## checkbox group
+      unname(q)
     }
     else {
-      q = unname(q)
+      ## decode vectors (ranges sliders, date ranges)
+      if (length(inputValues[[i]])>1L)
+        q = unlist(strsplit(q, ","))
+      ##
+      cl = class(inputValues[[i]])
+      ## Dates need to be handled separately 
+      if (cl=="Date") {
+        format(as.Date(as.numeric(q), "1970-01-01"), "%Y-%m-%d")
+      }
+      ## this should allow to correctly decode TRUE/FALSE 
+      else {
+        as(q, cl)
+      }
     }
-    session$sendInputMessage(names(query)[i], list(value=q))
+    session$sendInputMessage(names(queryValues)[i], list(value=q))
   }
 }

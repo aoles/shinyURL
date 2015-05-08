@@ -19,7 +19,7 @@
 
         shinyURL.UI()
 
-## Caveats
+## Limitations
 
 ### Long URLs
 
@@ -43,4 +43,4 @@ Avoid using input IDs which differ by appended numbers, i.e. do not use `value` 
 
 ### Action buttons
 
-For action buttons use IDs with a leading dot, e.g. `.myButton`.
+Unfortunately, operations performed using action buttons cannot be reliably restored. You can omit them from the query URL by using IDs with a leading dot, e.g. `.myButton`.
