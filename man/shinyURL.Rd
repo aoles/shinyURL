@@ -2,13 +2,13 @@
 % Please edit documentation in R/shinyURL.R
 \name{shinyURL}
 \alias{shinyURL}
-\alias{shinyURL.Server}
-\alias{shinyURL.UI}
+\alias{shinyURL.server}
+\alias{shinyURL.ui}
 \title{Save and restore the state of Shiny app's widgets}
 \usage{
-shinyURL.Server(session)
+shinyURL.server(session)
 
-shinyURL.UI(label = "Share URL", copyURL = TRUE, tinyURL = TRUE)
+shinyURL.ui(label = "Share URL", copyURL = TRUE, tinyURL = TRUE)
 }
 \arguments{
 \item{session}{Parameter passed from the Shiny server function}
@@ -23,11 +23,11 @@ shinyURL.UI(label = "Share URL", copyURL = TRUE, tinyURL = TRUE)
 Encode the state of Shiny app's widgets into an URL query string, and use parameters from the URL query string to initialize the applications.
 }
 \details{
-The \code{shinyURL.Server} method contains server logic for encoding
+The \code{shinyURL.server} method contains server logic for encoding
   and restoring the widgets' state. It is called from inside the app's server
   function with the \code{session} argument.
 
-The \code{shinyURL.UI} inserts a text field widget containing an URL to
+The \code{shinyURL.ui} inserts a text field widget containing an URL to
   the app's current view.  By default it also features the convenience 'Copy'
   button copying the URL to clipboard, and a 'TinyURL' button querying the
   URL shortening web service.  The inclusion of these buttons is optional and
@@ -39,9 +39,9 @@ The \code{shinyURL.UI} inserts a text field widget containing an URL to
 To start using shinyURL in your Shiny app, follow these three steps:
 \enumerate{
   \item Load the package in both 'server.R' an 'ui.R': \code{library("shinyURL")}
-  \item Add a call to \code{ shinyURL.Server(session)} inside the 'shinyServer' function in 'server.R',
+  \item Add a call to \code{ shinyURL.server(session)} inside the 'shinyServer' function in 'server.R',
   where `session` is the argument passed to the server function.
-  \item Add the \code{shinyURL.UI()} widget to 'ui.R'.
+  \item Add the \code{shinyURL.ui()} widget to 'ui.R'.
 }
 }
 \examples{
@@ -52,7 +52,7 @@ if (interactive()) {
       sidebarLayout(
         sidebarPanel(
           sliderInput("bins", "Number of bins:", min = 1,  max = 50, value = 30),
-          shinyURL.UI()
+          shinyURL.ui()
         ),
         mainPanel(
           plotOutput("plot")
@@ -60,7 +60,7 @@ if (interactive()) {
       )
     ),
     server = function(input, output, session) {
-      shinyURL.Server(session)
+      shinyURL.server(session)
       output$plot <- renderPlot({
         x <- faithful[, 2]
         bins <- seq(min(x), max(x), length.out = input$bins + 1)

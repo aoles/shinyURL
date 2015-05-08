@@ -2,6 +2,8 @@
 
 export(shinyURL.Server)
 export(shinyURL.UI)
+export(shinyURL.server)
+export(shinyURL.ui)
 importFrom(RCurl,getURL)
 importFrom(shiny,actionButton)
 importFrom(shiny,eventReactive)

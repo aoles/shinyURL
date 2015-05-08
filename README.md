@@ -11,13 +11,17 @@
 
 2. In 'server.R', add a call to
     
-        shinyURL.Server(session)
+        shinyURL.server(session)
         
     inside the `shinyServer` function, where `session` is the argument passed to the server function.
         
 3. Add the shinyURL widget to 'ui.R':
 
-        shinyURL.UI()
+        shinyURL.ui()
+        
+## Restoring tabset and navbar panels
+
+To save and restore active tabs provide the `id` argument to the functions `tabsetPanel` or `navbarPage`.
 
 ## Limitations
 
@@ -43,4 +47,8 @@ Avoid using input IDs which differ by appended numbers, i.e. do not use `value` 
 
 ### Action buttons
 
-Unfortunately, operations performed using action buttons cannot be reliably restored. You can omit them from the query URL by using IDs with a leading dot, e.g. `.myButton`.
+Unfortunately, operations performed using action buttons cannot be reliably recorded and restored. 
+
+### Disable encoding of certain inputs
+
+You can suppress certain inputs from being encoded in the query URL by using IDs with a leading dot, e.g. `.inputName`. These inputs won't be restored.

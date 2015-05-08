@@ -6,9 +6,9 @@
 #' To start using shinyURL in your Shiny app, follow these three steps:
 #' \enumerate{
 #'   \item Load the package in both 'server.R' an 'ui.R': \code{library("shinyURL")}
-#'   \item Add a call to \code{ shinyURL.Server(session)} inside the 'shinyServer' function in 'server.R',
+#'   \item Add a call to \code{ shinyURL.server(session)} inside the 'shinyServer' function in 'server.R',
 #'   where `session` is the argument passed to the server function.
-#'   \item Add the \code{shinyURL.UI()} widget to 'ui.R'.
+#'   \item Add the \code{shinyURL.ui()} widget to 'ui.R'.
 #' }
 #' @author Andrzej Oleś <andrzej.oles@@embl.de>
 #' @examples
@@ -19,7 +19,7 @@
 #'       sidebarLayout(
 #'         sidebarPanel(
 #'           sliderInput("bins", "Number of bins:", min = 1,  max = 50, value = 30),
-#'           shinyURL.UI()
+#'           shinyURL.ui()
 #'         ),
 #'         mainPanel(
 #'           plotOutput("plot")
@@ -27,7 +27,7 @@
 #'       )
 #'     ),
 #'     server = function(input, output, session) {
-#'       shinyURL.Server(session)
+#'       shinyURL.server(session)
 #'       output$plot <- renderPlot({
 #'         x <- faithful[, 2]
 #'         bins <- seq(min(x), max(x), length.out = input$bins + 1)
@@ -46,13 +46,13 @@ NULL
 
 inputId=".shinyURL"
 
-#' @details The \code{shinyURL.Server} method contains server logic for encoding
+#' @details The \code{shinyURL.server} method contains server logic for encoding
 #'   and restoring the widgets' state. It is called from inside the app's server
 #'   function with the \code{session} argument.
 #' @param session Parameter passed from the Shiny server function
 #' @rdname shinyURL
 #' @export
-shinyURL.Server = function(session) {
+shinyURL.server = function(session) {
   session$queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
   
   ## initialize from query string
@@ -88,6 +88,12 @@ shinyURL.Server = function(session) {
   invisible(NULL)
 }
 
+#' @export
+shinyURL.Server = function(...) {
+  .Deprecated("shinyURL.server")
+  shinyURL.server(...)
+}
+
 .invalidateOnInit = function(session, self) {
   observe({
     cat("Invalidate\n")
@@ -96,7 +102,7 @@ shinyURL.Server = function(session) {
   })
 }
 
-#' @details The \code{shinyURL.UI} inserts a text field widget containing an URL to
+#' @details The \code{shinyURL.ui} inserts a text field widget containing an URL to
 #'   the app's current view.  By default it also features the convenience 'Copy'
 #'   button copying the URL to clipboard, and a 'TinyURL' button querying the 
 #'   URL shortening web service.  The inclusion of these buttons is optional and
@@ -107,7 +113,7 @@ shinyURL.Server = function(session) {
 #' @param tinyURL Use the TinyURL web service for shortening the URL
 #' @rdname shinyURL
 #' @export
-shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
+shinyURL.ui = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
   textInput(inputId, label),
   if ( isTRUE(copyURL) )
     tagList(
@@ -124,10 +130,25 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
     actionButton(".getTinyURL", "TinyURL", icon=icon("compress"), title="Shorten URL")
 )
 
+#' @export
+shinyURL.UI = function(...) {
+  .Deprecated("shinyURL.ui")
+  shinyURL.ui(...)
+}
+
+initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = NULL) {
+  .Deprecated("shinyURL")
+  .initFromURL(session, nestedDependency, self, encode, resume)
+}
+
 .encodeURL = function(session, inputId) {
   observe({
     ## all.names = FALSE excludes objects with a leading dot, in this case the ".url" field to avoid self-dependency
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
+    
+    ## remove actionButtons
+    inputValues = inputValues[!unlist(lapply(inputValues, function(x) inherits(x, "shinyActionButtonValue")), use.names=FALSE)]
+    
     ## remove ggvis specific inputs
     idx = grep("_mouse_(over|out)$", names(inputValues))
     if ( length(idx) > 0 ) inputValues = inputValues[-idx]
@@ -234,16 +255,14 @@ shinyURL.UI = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
       ## decode vectors (ranges sliders, date ranges)
       if (length(inputValues[[i]])>1L)
         q = unlist(strsplit(q, ","))
-      ##
-      cl = class(inputValues[[i]])
-      ## Dates need to be handled separately 
-      if (cl=="Date") {
-        format(as.Date(as.numeric(q), "1970-01-01"), "%Y-%m-%d")
-      }
-      ## this should allow to correctly decode TRUE/FALSE 
-      else {
-        as(q, cl)
-      }
+      ## use information about the class of the inputs when initializing them
+      cl = class(inputValues[[i]])[1L]
+      switch(cl,
+             ## Dates need to be handled separately
+             Date = format(as.Date(as.numeric(q), "1970-01-01"), "%Y-%m-%d"),
+             ## default case; should allow to correctly decode TRUE/FALSE 
+             as(q, cl)
+             )
     }
     session$sendInputMessage(names(queryValues)[i], list(value=q))
   }
