@@ -53,10 +53,10 @@ inputId=".shinyURL"
 #' @rdname shinyURL
 #' @export
 shinyURL.server = function(session) {
-  session$queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
+  queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
   
   ## initialize from query string
-  init = .initFromURL(session, init)
+  init = .initFromURL(session, queryValues, init)
   ## encode current app's state
   .encodeURL(session, inputId)
   
@@ -88,6 +88,10 @@ shinyURL.server = function(session) {
   invisible(NULL)
 }
 
+#' Deprecated functions
+#' 
+#' @param ... Arguments passed to the new methods \code{\link{shinyURL.server}} and \code{\link{shinyURL.ui}}.
+#' @rdname deprecated
 #' @export
 shinyURL.Server = function(...) {
   .Deprecated("shinyURL.server")
@@ -130,6 +134,7 @@ shinyURL.ui = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
     actionButton(".getTinyURL", "TinyURL", icon=icon("compress"), title="Shorten URL")
 )
 
+#' @rdname deprecated
 #' @export
 shinyURL.UI = function(...) {
   .Deprecated("shinyURL.ui")
@@ -137,8 +142,7 @@ shinyURL.UI = function(...) {
 }
 
 initFromURL = function(session, nestedDependency = FALSE, self, encode, resume = NULL) {
-  .Deprecated("shinyURL")
-  .initFromURL(session, nestedDependency, self, encode, resume)
+  .Defunct("shinyURL.server")
 }
 
 .encodeURL = function(session, inputId) {
@@ -214,9 +218,10 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
   }, priority = -999)
 }
 
-.initFromURL = function(session, self) {
+.initFromURL = function(session, queryValues, self) {
   observe({
-    queryValues = session$queryValues
+    queryValuesCopy = queryValues
+    
     ## suspend if nothing to do
     if ( length(queryValues) == 0L ) {
       self$suspend()
@@ -230,13 +235,13 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     queryIds = match(updateValues, names(queryValues))
     inputIds = match(updateValues, names(inputValues))
     
-    if ( length(queryIds) > 0 ) session$queryValues = queryValues[-queryIds]
-    
+    if ( length(queryIds) > 0 ) queryValues <<- queryValues[-queryIds]
+        
     ## schedule the update only after all input messages have been sent out (see
     ## the 'flushOutput' function in shiny.R). This is to avoid potential
     ## overwriting by some update events from user code
     session$onFlushed(function() {
-      .initInputs(session, queryValues[queryIds], inputValues[inputIds])
+      .initInputs(session, queryValuesCopy[queryIds], inputValues[inputIds])
     })
     
     invisible(NULL)
