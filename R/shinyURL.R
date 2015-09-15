@@ -13,6 +13,10 @@
 #' @author Andrzej Oleś <andrzej.oles@@embl.de>
 #' @examples
 #' if (interactive()) {
+#'   library("shiny")
+#'   
+#'   ## A Simple Shiny App
+#'    
 #'   shinyApp(
 #'     ui = fluidPage(
 #'       titlePanel("Hello Shiny!"),
@@ -35,8 +39,14 @@
 #'       })
 #'     }
 #'   )
-#' }
 #' 
+#'   ## Shiny Widgets Demo
+#'   shinyAppDir( system.file('examples', 'widgets', package='shinyURL') )
+#'
+#'   ## Tabsets Demo
+#'   shinyAppDir( system.file('examples', 'tabsets', package='shinyURL') )
+#'
+#' } 
 #' @name shinyURL
 #' @importFrom shiny isolate observe parseQueryString observeEvent updateTextInput eventReactive reactiveValuesToList invalidateLater
 #' @importFrom shiny tagList textInput tags icon includeScript actionButton

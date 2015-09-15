@@ -46,6 +46,10 @@ To start using shinyURL in your Shiny app, follow these three steps:
 }
 \examples{
 if (interactive()) {
+  library("shiny")
+
+  ## A Simple Shiny App
+
   shinyApp(
     ui = fluidPage(
       titlePanel("Hello Shiny!"),
@@ -68,6 +72,13 @@ if (interactive()) {
       })
     }
   )
+
+  ## Shiny Widgets Demo
+  shinyAppDir( system.file('examples', 'widgets', package='shinyURL') )
+
+  ## Tabsets Demo
+  shinyAppDir( system.file('examples', 'tabsets', package='shinyURL') )
+
 }
 }
 \author{
