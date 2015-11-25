@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/aoles/shinyURL.svg)](https://travis-ci.org/aoles/shinyURL)
+
 ## Installation
 
     # install.packages("devtools")
