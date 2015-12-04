@@ -111,7 +111,6 @@ shinyURL.Server = function(...) {
 
 .invalidateOnInit = function(session, self) {
   observe({
-    cat("Invalidate\n")
     invalidateLater(0, session)
     self$suspend()
   })
@@ -193,7 +192,6 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
       } else {
         ## encountered CheckboxGroup; do not increment i because the
         ## corresponding element is removed from the list
-        cat(paste(inputValues[paste0(n, seq_along(idx))], collapse = ", "), "\n")
         value = inputValues[[n]]
         names = names[-c(i, idx)]
         ## this is important to be able to have all checkboxes unchecked
