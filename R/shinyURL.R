@@ -135,7 +135,7 @@ shinyURL.ui = function(label="Share URL", copyURL=TRUE, tinyURL=TRUE) tagList(
       includeScript(system.file("zeroclipboard", "ZeroClipboard.min.js", package="shinyURL")),
       tags$script(type="text/javascript",
                   paste(collapse="\n", c("",
-                                         "ZeroClipboard.config( { swfPath: 'http://cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf' } );",
+                                         "ZeroClipboard.config( { swfPath: '//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf' } );",
                                          "var client = new ZeroClipboard( document.getElementById('.copy') );",
                                          ""))
       )
