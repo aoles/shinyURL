@@ -8,12 +8,16 @@
 \usage{
 shinyURL.server(session)
 
-shinyURL.ui(label = "Share URL", copyURL = TRUE, tinyURL = TRUE)
+shinyURL.ui(label = "Share URL", width = "100\%", copyURL = TRUE,
+  tinyURL = TRUE)
 }
 \arguments{
 \item{session}{Parameter passed from the Shiny server function}
 
 \item{label}{Label for the URL field}
+
+\item{width}{The width of the URL text field, e.g. \code{'100\%'}, or
+\code{'400px'}; see \code{\link[shiny]{validateCssUnit}}.}
 
 \item{copyURL}{Include a 'Copy' button for convenient copying to clipboard}
 
