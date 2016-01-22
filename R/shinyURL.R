@@ -77,18 +77,25 @@ shinyURL.server = function(session) {
     input = session$input
     .busyMsg = "Please wait..."
     
-    observeEvent( input$.getTinyURL, updateTextInput(session, inputId, value=.busyMsg) )
+    ## construct a query string from the current URL
+    tinyURLquery = eventReactive(input$.getTinyURL, {
+      sprintf("http://tinyurl.com/api-create.php?url=%s", input[[inputId]]) 
+    })
     
-    tinyURLquery = eventReactive(input$.getTinyURL, sprintf("http://tinyurl.com/api-create.php?url=%s", input[[inputId]]) )
+    ## set busy message
+    observeEvent( tinyURLquery(), {
+      updateTextInput(session, inputId, value=.busyMsg)
+      runTinyURLquery$resume()
+    })
     
-    observe({
-      if ( is.null(tinyURLquery()) ) 
-        return()
-      if ( input[[inputId]]==.busyMsg ) {
+    ## query TinyURL
+    runTinyURLquery = observe({
+       if ( input[[inputId]]==.busyMsg ) {
         tinyurl = tryCatch(getURL(tinyURLquery()), error = function(e) "Error fetching tinyURL!")
         updateTextInput(session, inputId, value=tinyurl)
+        runTinyURLquery$suspend()
       }
-    })
+    }, suspended=TRUE)
   }
   
   ## Initial invalidation needed to execute scheduled input updates when the
@@ -248,6 +255,7 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
 
 .initFromURL = function(session, queryValues, self) {
   observe({
+    session = getDefaultReactiveDomain()
     queryValuesCopy = queryValues
     
     ## suspend if nothing to do
