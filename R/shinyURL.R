@@ -67,36 +67,12 @@ shinyURL.server = function(session) {
   
   ## initialize from query string
   init = .initFromURL(session, queryValues, init)
+  
   ## encode current app's state
   .encodeURL(session, inputId)
   
-  ## use TinyURL for shortening URL
-  useTinyURL = ".getTinyURL" %in% names(isolate(reactiveValuesToList(session$input, all.names=TRUE)))
-  
-  if ( useTinyURL ) {
-    input = session$input
-    .busyMsg = "Please wait..."
-    
-    ## construct a query string from the current URL
-    tinyURLquery = eventReactive(input$.getTinyURL, {
-      sprintf("http://tinyurl.com/api-create.php?url=%s", input[[inputId]]) 
-    })
-    
-    ## set busy message
-    observeEvent( tinyURLquery(), {
-      updateTextInput(session, inputId, value=.busyMsg)
-      runTinyURLquery$resume()
-    })
-    
-    ## query TinyURL
-    runTinyURLquery = observe({
-       if ( input[[inputId]]==.busyMsg ) {
-        tinyurl = tryCatch(getURL(tinyURLquery()), error = function(e) "Error fetching tinyURL!")
-        updateTextInput(session, inputId, value=tinyurl)
-        runTinyURLquery$suspend()
-      }
-    }, suspended=TRUE)
-  }
+  ## use TinyURL for shortening the URL
+  .queryTinyURL(session)
   
   ## Initial invalidation needed to execute scheduled input updates when the
   ## browser is refreshed switched off because it interferes with dynamic UIs 
@@ -104,6 +80,7 @@ shinyURL.server = function(session) {
     
   invisible(NULL)
 }
+
 
 #' Deprecated functions
 #' 
@@ -180,8 +157,12 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     ## ".url" field to avoid self-dependency
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
     
+    ## quit if there is there are no inputs to encode
+    if (length(inputValues)==0) return()
+    
     ## remove actionButtons
-    inputValues = inputValues[!unlist(lapply(inputValues, function(x) inherits(x, "shinyActionButtonValue")), use.names=FALSE)]
+    isActionButton = unlist(lapply(inputValues, function(x) inherits(x, "shinyActionButtonValue")), use.names=FALSE)
+    inputValues = inputValues[!isActionButton]
     
     ## remove ggvis specific inputs
     idx = grep("_mouse_(over|out)$", names(inputValues))
@@ -255,7 +236,6 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
 
 .initFromURL = function(session, queryValues, self) {
   observe({
-    session = getDefaultReactiveDomain()
     queryValuesCopy = queryValues
     
     ## suspend if nothing to do
@@ -308,4 +288,30 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     }
     session$sendInputMessage(names(queryValues)[i], list(value=q))
   }
+}
+
+
+.queryTinyURL = function(session) {
+  input = session$input
+  .busyMsg = "Please wait..."
+  
+  ## construct a query string from the current URL
+  tinyURLquery = eventReactive(input$.getTinyURL, {
+    sprintf("http://tinyurl.com/api-create.php?url=%s", input[[inputId]]) 
+  })
+  
+  ## set busy message
+  observeEvent(tinyURLquery(), {
+    updateTextInput(session, inputId, value=.busyMsg)
+    runTinyURLquery$resume()
+  })
+  
+  ## query TinyURL
+  runTinyURLquery = observe({
+    if ( input[[inputId]]==.busyMsg ) {
+      tinyurl = tryCatch(getURL(tinyURLquery()), error = function(e) "Error fetching tinyURL!")
+      updateTextInput(session, inputId, value=tinyurl)
+      runTinyURLquery$suspend()
+    }
+  }, suspended=TRUE)
 }
