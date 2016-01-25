@@ -7,23 +7,27 @@
 
 ## Use
 
-1. Load the package in both **server.R** and **ui.R**:
+1. Load the package in both **server.R** and **ui.R**.
 
         library("shinyURL")
 
-2. In **server.R**, add a call to
+2. In **server.R**, add inside the server function a call to
     
-        shinyURL.server(session)
+        shinyURL.server()
         
-    inside the `shinyServer` function, where `session` is the argument passed to the server function.
+    where `session` is the argument passed to the server function.
         
-3. Add the shinyURL widget to **ui.R**:
+3. Add the shinyURL widget to **ui.R**.
 
         shinyURL.ui()
         
-## Restoring tabset and navbar panels
+### Restoring of tabset and navbar panels
 
 To save and restore active tabs provide the `id` argument to the functions `tabsetPanel` or `navbarPage`.
+
+### Disable encoding of certain inputs
+
+You can suppress certain inputs from being encoded in the query URL by using IDs with a leading dot, e.g. `.inputName`. These inputs won't be restored.
 
 ## Limitations
 
@@ -47,6 +51,3 @@ These points are especially relevant for apps with lots of controls.
 
 Unfortunately, operations performed using action buttons cannot be reliably recorded and restored. 
 
-### Disable encoding of certain inputs
-
-You can suppress certain inputs from being encoded in the query URL by using IDs with a leading dot, e.g. `.inputName`. These inputs won't be restored.

@@ -1,13 +1,13 @@
 #' Save and restore the state of Shiny app's widgets
 #' 
-#' Encode the state of Shiny app's widgets into an URL query string, and use
+#' Encode the state of Shiny app's widgets into an URL query string, and use 
 #' parameters from the URL query string to initialize the applications.
 #' 
 #' @section Quick setup: To start using shinyURL in your Shiny app, follow these
-#'   three steps: \enumerate{ \item Load the package in both 'server.R' an
-#'   'ui.R': \code{library("shinyURL")} \item Add a call to \code{
+#'   three steps: \enumerate{ \item Load the package in both 'server.R' an 
+#'   'ui.R': \code{library("shinyURL")} \item Add a call to \code{ 
 #'   shinyURL.server(session)} inside the 'shinyServer' function in 'server.R', 
-#'   where `session` is the argument passed to the server function. \item Add
+#'   where `session` is the argument passed to the server function. \item Add 
 #'   the \code{shinyURL.ui()} widget to 'ui.R'. }
 #' @author Andrzej Oleś <andrzej.oles@@embl.de>
 #' @examples
@@ -47,9 +47,11 @@
 #' 
 #' } 
 #' @name shinyURL
-#' @importFrom shiny isolate observe parseQueryString observeEvent
+#' @importFrom shiny isolate observe parseQueryString observeEvent 
 #'   updateTextInput eventReactive reactiveValuesToList invalidateLater
-#' @importFrom shiny tagList tags icon includeScript actionButton div validateCssUnit
+#'   getDefaultReactiveDomain
+#' @importFrom shiny tagList tags icon includeScript actionButton div
+#'   validateCssUnit
 #' @importFrom RCurl getURL
 #' @importFrom utils URLencode
 NULL
@@ -59,10 +61,14 @@ inputId=".shinyURL"
 #' @details The \code{shinyURL.server} method contains server logic for encoding
 #'   and restoring the widgets' state. It is called from inside the app's server
 #'   function with the \code{session} argument.
-#' @param session Parameter passed from the Shiny server function
+#'   ).
+#' @param session typically the same as the optional parameter passed into the Shiny server function as an argument; if missing defaults to \code{getDefaultReactiveDomain()}
 #' @rdname shinyURL
 #' @export
 shinyURL.server = function(session) {
+  if (missing(session))
+    session = getDefaultReactiveDomain()
+  
   queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
   
   ## initialize from query string

@@ -12,7 +12,7 @@ shinyURL.ui(label = "Share URL", width = "100\%", copyURL = TRUE,
   tinyURL = TRUE)
 }
 \arguments{
-\item{session}{Parameter passed from the Shiny server function}
+\item{session}{typically the same as the optional parameter passed into the Shiny server function as an argument; if missing defaults to \code{getDefaultReactiveDomain()}}
 
 \item{label}{Label for the URL field}
 
@@ -24,13 +24,14 @@ shinyURL.ui(label = "Share URL", width = "100\%", copyURL = TRUE,
 \item{tinyURL}{Use the TinyURL web service for shortening the URL}
 }
 \description{
-Encode the state of Shiny app's widgets into an URL query string, and use
+Encode the state of Shiny app's widgets into an URL query string, and use 
 parameters from the URL query string to initialize the applications.
 }
 \details{
 The \code{shinyURL.server} method contains server logic for encoding
   and restoring the widgets' state. It is called from inside the app's server
   function with the \code{session} argument.
+  ).
 
 The \code{shinyURL.ui} inserts a text field widget containing an URL
   to the app's current view.  By default it also features the convenience
@@ -41,10 +42,10 @@ The \code{shinyURL.ui} inserts a text field widget containing an URL
 }
 \section{Quick setup}{
  To start using shinyURL in your Shiny app, follow these
-  three steps: \enumerate{ \item Load the package in both 'server.R' an
-  'ui.R': \code{library("shinyURL")} \item Add a call to \code{
+  three steps: \enumerate{ \item Load the package in both 'server.R' an 
+  'ui.R': \code{library("shinyURL")} \item Add a call to \code{ 
   shinyURL.server(session)} inside the 'shinyServer' function in 'server.R', 
-  where `session` is the argument passed to the server function. \item Add
+  where `session` is the argument passed to the server function. \item Add 
   the \code{shinyURL.ui()} widget to 'ui.R'. }
 }
 \examples{
