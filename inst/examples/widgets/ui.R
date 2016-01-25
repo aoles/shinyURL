@@ -65,7 +65,7 @@ shinyUI(fluidPage(
     )),
     
     column(4, wellPanel(
-      sliderInput("sliderB", label = h3("Slider range"), min = 0, max = 100, value = c(25, 75))
+      sliderInput("sliderB", label = h3("Slider range"), min = 0, max = 10, value = c(2.5, 7.5), step = 0.1)
     ))
     
   ),
@@ -76,7 +76,11 @@ shinyUI(fluidPage(
       selectInput("select", label = h3("Select box"), choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), selected = 1)
     )),
     
-    column(8, wellPanel(
+    column(4, wellPanel(
+      selectInput("multiselect", label = h3("Multiple select"), choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), selected = 1, multiple = TRUE)
+    )),
+    
+    column(4, wellPanel(
       shinyURL.ui(),
       style = "background-color:#428bca; color:#fff;"
     ))

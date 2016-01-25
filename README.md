@@ -43,10 +43,6 @@ The state of a shiny app gets saved by encoding its input values into an URL. To
 
 These points are especially relevant for apps with lots of controls.
 
-### Input IDs
-
-Avoid using input IDs which differ by appended numbers, i.e. do not use `value` along with `value2`.
-
 ### Action buttons
 
 Unfortunately, operations performed using action buttons cannot be reliably recorded and restored. 

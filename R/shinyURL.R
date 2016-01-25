@@ -168,57 +168,36 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
     idx = grep("_mouse_(over|out)$", names(inputValues))
     if ( length(idx) > 0 ) inputValues = inputValues[-idx]
     
-    ## NOTE: the default values of checkbox groups are encoded as TRUE/FALSE 
-    ## values of individual elements named as checkboxGroupNameX, where X is the
-    ## element index; the _values_ set by user are stored as a vector under the 
-    ## checkboxGroupName
-    
-    ## NOTE2: The behavior described above has changed in shiny 0.12.0, so that 
-    ## the default values are no longer stored as checkboxGroupNameX elements. 
-    ## Therefore, the code below can be simplified if dependency on shiny (>= 
-    ## 0.12.0) is stated in the DESCRIPTION
-    
-    ## sort to catch checkboxGroupNames before individual element names
-    names = sort(names(inputValues))
-    addValues = NULL
-    i = 1L
-    while (i <= length(names) ) {
-      n = names[i]
-      idx = grep(sprintf("^%s[0-9]+", n), names)
-      
-      if ( length(idx) == 0L ) {
-        ## advance to the next input
-        i = i + 1L
-      } else {
-        ## encountered CheckboxGroup; do not increment i because the
-        ## corresponding element is removed from the list
-        value = inputValues[[n]]
-        names = names[-c(i, idx)]
-        ## this is important to be able to have all checkboxes unchecked
-        if ( is.null(value) ) value = ""
-        values = as.list(value)
-        ## expand CheckboxGroup vectors
-        names(values) = sprintf("%s[%s]", n, seq_along(value))
-        addValues = c(values, addValues)
-      }
-    }
-    inputValues = inputValues[names]
-    inputValues = c(inputValues, addValues)
-    
-    inputValues = lapply(inputValues, function(x) {
-      if (length(x) == 1L) {
-        ## encode TRUE/FALSE as T/F
-        if ( is.logical(x) ) {
-          if (isTRUE(x)) "T" else "F"
-        }
-        else x
-      }
+    inputValues = mapply(function(name, value) {
+      ## this is important to be able to have all checkboxes unchecked
+      if (is.null(value))
+        ""
       else {
-        ## encode vectors as comma separated lists
-        if (class(x)=="Date") x = as.integer(x)
-        paste(x, collapse=",")
+        if (length(value) == 1L) {
+          ## encode TRUE/FALSE as T/F
+          if (is.logical(value)) {
+            if (isTRUE(value)) "T" else "F"
+          }
+          else value
+        }
+        else {
+          cl = class(value)
+          ## expand checkbox group and multiple select vectors
+          if (cl=="character") {
+            setNames(as.list(value), sprintf("%s[%s]", name, seq_along(value)))
+          }
+          ## encode range vectors as comma separated string
+          else {
+            if (cl=="Date") value = as.integer(value)
+            paste(value, collapse=",")
+          } 
+        }
       }
-    })
+    }, names(inputValues), inputValues, SIMPLIFY=FALSE)
+    
+    ## remove names of sublists before flattening
+    names(inputValues)[sapply(inputValues, is.list)] = ""
+    inputValues = unlist(inputValues)
     
     url = URLencode(paste0(
       session$clientData$url_protocol, "//",
@@ -266,19 +245,24 @@ initFromURL = function(session, nestedDependency = FALSE, self, encode, resume =
 }
 
 .initInputs = function(session, queryValues, inputValues) {
+  
+  
   for (i in seq_along(queryValues)) {
     q = queryValues[[i]]
     
     q = if (is.list(q)) {
-      ## checkbox group
+      ## checkbox group or multiple select
       unname(q)
     }
     else {
-      ## decode vectors (ranges sliders, date ranges)
+      ## decode range vectors (sliders and dates)
       if (length(inputValues[[i]])>1L)
         q = unlist(strsplit(q, ","))
       ## use information about the class of the inputs when initializing them
-      cl = class(inputValues[[i]])[1L]
+      cl = class(inputValues[[i]])
+      ## promote integer to numeric because numericInputs can contain either
+      if (cl=="integer")
+        cl = "numeric" 
       switch(cl,
              ## Dates need to be handled separately
              Date = format(as.Date(as.numeric(q), "1970-01-01"), "%Y-%m-%d"),

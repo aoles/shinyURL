@@ -1,7 +1,7 @@
 Package: shinyURL
 Type: Package
 Title: Save and restore the state of Shiny apps
-Version: 0.0.21
+Version: 0.0.22
 Encoding: UTF-8
 Author: Andrzej Oleś
 Maintainer: Andrzej Oleś <andrzej.oles@embl.de>
@@ -9,7 +9,7 @@ Description: Save and restore the state of a Shiny app's widgets by encoding
     them in an URL query string.
 Imports:
     RCurl,
-    shiny (>= 0.11.0),
+    shiny (>= 0.12.0),
     utils
 License: Artistic-2.0
 RoxygenNote: 5.0.1
