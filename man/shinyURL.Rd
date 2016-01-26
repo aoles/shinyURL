@@ -9,7 +9,7 @@
 shinyURL.server(session)
 
 shinyURL.ui(label = "Share URL", width = "100\%", copyURL = TRUE,
-  tinyURL = TRUE)
+  tinyURL = TRUE, ZeroClipboard.swf)
 }
 \arguments{
 \item{session}{Typically the same as the optional parameter passed into the
@@ -21,9 +21,15 @@ Shiny server function as an argument; if missing defaults to
 \item{width}{The width of the URL text field, e.g. \code{'100\%'}, or 
 \code{'400px'}; see \code{\link[shiny]{validateCssUnit}}.}
 
-\item{copyURL}{Include a \sQuote{Copy} button for convenient copying to clipboard}
+\item{copyURL}{Include a \sQuote{Copy} button for convenient copying to 
+clipboard}
 
 \item{tinyURL}{Use the TinyURL web service for shortening the URL}
+
+\item{ZeroClipboard.swf}{URL of the \dQuote{ZeroClipboard.swf} file, as 
+passed to the \sQuote{swfPath} parameter of \sQuote{ZeroClipboard.config}; 
+if missing defaults to 
+"//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"}
 }
 \description{
 Encode the state of Shiny app's widgets into an URL query string, and use 
@@ -36,10 +42,18 @@ The \code{shinyURL.server} method contains server logic for encoding
 
 The \code{shinyURL.ui} widget consists of a text field containing an
   URL to the app's current view state.  By default it also features the 
-  convenience \sQuote{Copy} button for copying the URL to clipboard, and a \sQuote{TinyURL}
-  button for querying the URL shortening web service.  The inclusion of these
-  buttons is optional and can be controlled by the \code{copyURL} and 
-  \code{tinyURL} arguments, respectively.
+  convenience \sQuote{Copy} button for copying the URL to clipboard, and a 
+  \sQuote{TinyURL} button for querying the URL shortening web service.  The 
+  inclusion of these buttons is optional and can be controlled by the 
+  \code{copyURL} and \code{tinyURL} arguments, respectively.
+  
+  The \sQuote{Copy} feature uses the ZeroClipboard library, which provides an
+  easy way to copy text to the clipboard using an invisible Adobe Flash movie
+  and JavaScript. shinyURL includes the JavaScript code to your app 
+  automatically, but you also need to have the \dQuote{ZeroClipboard.swf} 
+  available to the browser. By default shinyURL uses the file hosted on 
+  cdnjs; you can override this by setting the \code{ZeroClipboard.swf} 
+  argument to \code{shinyURL.ui}.
 }
 \section{Quick setup}{
  To start using shinyURL in your Shiny app, follow these

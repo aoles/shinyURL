@@ -1,7 +1,7 @@
 Package: shinyURL
 Type: Package
 Title: Save and restore the state of Shiny apps
-Version: 0.0.24
+Version: 0.0.25
 Encoding: UTF-8
 Author: Andrzej Oleś
 Maintainer: Andrzej Oleś <andrzej.oles@embl.de>
