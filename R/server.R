@@ -23,19 +23,20 @@ shinyURL.server = function(session) {
   ## browser is refreshed switched off because it interferes with dynamic UIs 
   ## invalidate = .invalidateOnInit(session, invalidate)
   
-  invisible(NULL)
+  invisible()
 }
 
 
 .initFromURL = function(session, self) {
   queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
+  
   observe({
     queryValuesCopy = queryValues
     
     ## suspend if nothing to do
     if ( length(queryValues) == 0L ) {
       self$suspend()
-      return(NULL)
+      return()
     }
     
     ## iterate through available inputs as long as there are any uninitialized 
@@ -55,7 +56,6 @@ shinyURL.server = function(session) {
       .initInputs(session, queryValuesCopy[queryIds], inputValues[inputIds])
     })
     
-    invisible(NULL)
   }, priority = -99)
 }
 
@@ -150,6 +150,8 @@ shinyURL.server = function(session) {
     
     updateTextInput(session, inputId, value = url)
   }, priority = -999)
+  
+  invisible()
 }
 
 
@@ -176,4 +178,6 @@ shinyURL.server = function(session) {
       runTinyURLquery$suspend()
     }
   }, suspended=TRUE)
+  
+  invisible()
 }
