@@ -52,7 +52,7 @@ The \code{shinyURL.ui} widget consists of a text field containing an
   and JavaScript. shinyURL includes the JavaScript code to your app 
   automatically, but you also need to have the \dQuote{ZeroClipboard.swf} 
   available to the browser. By default shinyURL uses the file hosted on 
-  cdnjs; you can override this by setting the \code{ZeroClipboard.swf} 
+  jsDelivr CDN; you can override this by setting the \code{ZeroClipboard.swf} 
   argument to \code{shinyURL.ui}.
 }
 \section{Quick setup}{

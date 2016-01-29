@@ -10,7 +10,7 @@
 #'   and JavaScript. shinyURL includes the JavaScript code to your app 
 #'   automatically, but you also need to have the \dQuote{ZeroClipboard.swf} 
 #'   available to the browser. By default shinyURL uses the file hosted on 
-#'   cdnjs; you can override this by setting the \code{ZeroClipboard.swf} 
+#'   jsDelivr CDN; you can override this by setting the \code{ZeroClipboard.swf} 
 #'   argument to \code{shinyURL.ui}.
 #' @param label Label for the URL field
 #' @param width The width of the URL text field, e.g. \code{'100\%'}, or 
@@ -26,7 +26,7 @@
 #' @export
 shinyURL.ui = function(label = "Share URL", width = "100%", copyURL = TRUE, tinyURL = TRUE, ZeroClipboard.swf) {
   if (missing(ZeroClipboard.swf))
-    ZeroClipboard.swf = "//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"
+    ZeroClipboard.swf = "//cdn.jsdelivr.net/zeroclipboard/2.2.0/ZeroClipboard.swf"
   div(
     class = "form-group shiny-input-container", # same as for textInput
     style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
