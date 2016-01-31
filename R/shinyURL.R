@@ -48,7 +48,7 @@
 #' @name shinyURL
 #' @importFrom shiny isolate observe parseQueryString observeEvent 
 #'   updateTextInput eventReactive reactiveValuesToList invalidateLater 
-#'   getDefaultReactiveDomain
+#'   getDefaultReactiveDomain addResourcePath
 #' @importFrom shiny tagList tags icon includeScript actionButton div 
 #'   validateCssUnit
 #' @importFrom RCurl getURL

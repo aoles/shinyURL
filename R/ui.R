@@ -9,9 +9,11 @@
 #'   easy way to copy text to the clipboard using an invisible Adobe Flash movie
 #'   and JavaScript. shinyURL includes the JavaScript code to your app 
 #'   automatically, but you also need to have the \dQuote{ZeroClipboard.swf} 
-#'   available to the browser. By default shinyURL uses the file hosted on 
-#'   jsDelivr CDN; you can override this by setting the \code{ZeroClipboard.swf} 
-#'   argument to \code{shinyURL.ui}.
+#'   available to the browser. By default shinyURL uses a local copy distributed
+#'   with the package; you can override this by setting the
+#'   \code{ZeroClipboard.swf} argument to \code{shinyURL.ui}, for example, use 
+#'   "//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"
+#'   for a file hosted on jsDelivr CDN.
 #' @param label Label for the URL field
 #' @param width The width of the URL text field, e.g. \code{'100\%'}, or 
 #'   \code{'400px'}; see \code{\link[shiny]{validateCssUnit}}.
@@ -20,13 +22,13 @@
 #' @param tinyURL Use the TinyURL web service for shortening the URL
 #' @param ZeroClipboard.swf URL of the \dQuote{ZeroClipboard.swf} file, as 
 #'   passed to the \sQuote{swfPath} parameter of \sQuote{ZeroClipboard.config}; 
-#'   if missing defaults to 
-#'   "//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"
+#'   if missing defaults to the local copy distributed with shinyURL
 #' @rdname shinyURL
 #' @export
 shinyURL.ui = function(label = "Share URL", width = "100%", copyURL = TRUE, tinyURL = TRUE, ZeroClipboard.swf) {
   if (missing(ZeroClipboard.swf))
-    ZeroClipboard.swf = "//cdn.jsdelivr.net/zeroclipboard/2.2.0/ZeroClipboard.swf"
+    addResourcePath("shinyURL", system.file("zeroclipboard", package = "shinyURL"))
+    ZeroClipboard.swf = "shinyURL/ZeroClipboard.swf"
   div(
     class = "form-group shiny-input-container", # same as for textInput
     style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),

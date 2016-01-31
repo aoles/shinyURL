@@ -28,8 +28,7 @@ clipboard}
 
 \item{ZeroClipboard.swf}{URL of the \dQuote{ZeroClipboard.swf} file, as 
 passed to the \sQuote{swfPath} parameter of \sQuote{ZeroClipboard.config}; 
-if missing defaults to 
-"//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"}
+if missing defaults to the local copy distributed with shinyURL}
 }
 \description{
 Encode the state of Shiny app's widgets into an URL query string, and use 
@@ -51,9 +50,11 @@ The \code{shinyURL.ui} widget consists of a text field containing an
   easy way to copy text to the clipboard using an invisible Adobe Flash movie
   and JavaScript. shinyURL includes the JavaScript code to your app 
   automatically, but you also need to have the \dQuote{ZeroClipboard.swf} 
-  available to the browser. By default shinyURL uses the file hosted on 
-  jsDelivr CDN; you can override this by setting the \code{ZeroClipboard.swf} 
-  argument to \code{shinyURL.ui}.
+  available to the browser. By default shinyURL uses a local copy distributed
+  with the package; you can override this by setting the
+  \code{ZeroClipboard.swf} argument to \code{shinyURL.ui}, for example, use 
+  "//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"
+  for a file hosted on jsDelivr CDN.
 }
 \section{Quick setup}{
  To start using shinyURL in your Shiny app, follow these
