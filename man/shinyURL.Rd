@@ -97,6 +97,9 @@ if (interactive()) {
 
   ## Tabsets Demo
   shinyAppDir( system.file('examples', 'tabsets', package='shinyURL') )
+  
+  ## Showcase demo available live at https://aoles.shinyapps.io/shinyURL
+  shinyAppDir( system.file('examples', 'showcase', package='shinyURL') )
 
 }
 }
