@@ -35,7 +35,8 @@ shinyURL.ui = function(label = "Share URL", width = "100%", copyURL = TRUE, tiny
     
     ## URL text field
     if (!is.null(label) && !is.na(label)) tags$label(label, `for` = inputId),
-    tags$input(id = inputId, type="text", class="form-control", value="", style="margin-bottom: 5px;"),
+    tags$input(id = inputId, type="text", class="form-control", value="", style="margin-bottom: 5px;",
+               title = "URL of the current view state of the app"),
     
     ## Copy button
     if ( isTRUE(copyURL) )
