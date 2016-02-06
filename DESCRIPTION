@@ -11,5 +11,6 @@ Imports:
     RCurl,
     shiny (>= 0.12.0),
     utils
+Suggest: markdown
 License: Artistic-2.0
 RoxygenNote: 5.0.1

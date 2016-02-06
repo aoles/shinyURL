@@ -1,4 +1,5 @@
 library(shinyURL)
+library(markdown)
 
 variables = list(`Eruption duration` = "eruptions", `Waiting time` = "waiting")
 
