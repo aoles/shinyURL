@@ -165,16 +165,18 @@ shinyURL.server = function(session) {
   ## set busy message
   observeEvent(tinyURLquery(), {
     updateTextInput(session, inputId, value=.busyMsg)
-    runTinyURLquery$resume()
+    
+    ## resume the observer only after .busyMsg is set
+    session$onFlushed(function() {
+      runTinyURLquery$resume()
+    })
   })
   
   ## query TinyURL
   runTinyURLquery = observe({
-    if ( input[[inputId]]==.busyMsg ) {
-      tinyurl = tryCatch(getURL(tinyURLquery()), error = function(e) "Error fetching tinyURL!")
-      updateTextInput(session, inputId, value=tinyurl)
-      runTinyURLquery$suspend()
-    }
+    tinyurl = tryCatch(getURL(tinyURLquery()), error = function(e) "Error fetching tinyURL!")
+    updateTextInput(session, inputId, value=tinyurl)
+    runTinyURLquery$suspend()
   }, suspended=TRUE)
   
   invisible()
