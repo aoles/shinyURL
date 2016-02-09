@@ -89,6 +89,15 @@ shinyURL.server = function(session) {
 
 
 .encodeURL = function(session, inputId) {
+  clientData = isolate(reactiveValuesToList(session$clientData))
+  
+  ## base URL which is not supposed to change
+  baseURL = paste0(clientData$url_protocol, "//",
+                   clientData$url_hostname,
+                   ## add port number if present
+                   if( (port=clientData$url_port)!="" ) paste0(":", port),
+                   clientData$url_pathname)
+  
   observe({
     ## all.names = FALSE excludes objects with a leading dot, in this case the
     ## ".url" field to avoid self-dependency
@@ -137,11 +146,7 @@ shinyURL.server = function(session) {
     inputValues = unlist(inputValues)
     
     url = URLencode(paste0(
-      session$clientData$url_protocol, "//",
-      session$clientData$url_hostname,
-      ## add port number if present
-      if( (port=session$clientData$url_port)!="" ) paste0(":", port),
-      session$clientData$url_pathname,
+      baseURL,
       ## encode widget state
       "?", paste(names(inputValues), inputValues, sep = "=", collapse = "&")
     ))
