@@ -33,12 +33,6 @@ shinyURL.server = function(session) {
   observe({
     queryValuesCopy = queryValues
     
-    ## suspend if nothing to do
-    if ( length(queryValues) == 0L ) {
-      self$suspend()
-      return()
-    }
-    
     ## iterate through available inputs as long as there are any uninitialized 
     ## values in queryValues the expression below depends on inputs which is 
     ## neccassary to restore dynamic UIs
@@ -55,6 +49,10 @@ shinyURL.server = function(session) {
     session$onFlushed(function() {
       .initInputs(session, queryValuesCopy[queryIds], inputValues[inputIds])
     })
+    
+    ## suspend if nothing to do
+    if ( length(queryValues) == 0L )
+      self$suspend()
     
   }, priority = -99)
 }
