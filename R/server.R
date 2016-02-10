@@ -1,9 +1,10 @@
 #' @details The \code{shinyURL.server} method contains server logic for encoding
 #'   and restoring the widgets' values. It is called from inside the app's
-#'   server function, and can take the \code{session} objects as argument.
+#'   server script, and can take the \code{session} objects as argument.
 #' @param session Typically the same as the optional parameter passed into the
 #'   Shiny server function as an argument; if missing defaults to
 #'   \code{getDefaultReactiveDomain()}
+#' @return \code{shinyURL.server} returns a reactive expression evaluating to the app's URL.
 #' @rdname shinyURL
 #' @export
 shinyURL.server = function(session) {
@@ -29,7 +30,6 @@ shinyURL.server = function(session) {
 
 .initFromURL = function(session, self) {
   queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
-  
   observe({
     queryValuesCopy = queryValues
     
@@ -98,7 +98,7 @@ shinyURL.server = function(session) {
                    if( (port=clientData$url_port)!="" ) paste0(":", port),
                    clientData$url_pathname)
   
-  url = reactive({
+  queryString = reactive({
     ## all.names = FALSE excludes objects with a leading dot, in this case the
     ## ".url" field to avoid self-dependency
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
@@ -145,12 +145,16 @@ shinyURL.server = function(session) {
     names(inputValues)[sapply(inputValues, is.list)] = ""
     inputValues = unlist(inputValues)
     
-    URLencode(paste(baseURL, paste(names(inputValues), inputValues, sep = "=", collapse = "&"), sep = "?"))
+    paste(names(inputValues), inputValues, sep = "=", collapse = "&")
   })
   
   observe({
     updateTextInput(session, inputId, value = url())
   }, priority = -999)
+  
+  url = reactive({
+    URLencode(paste(c(baseURL, queryString()), collapse = "?"))
+  })
   
   url
 }

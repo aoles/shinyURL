@@ -46,12 +46,15 @@
 #'   
 #'   ## Showcase demo available live at https://aoles.shinyapps.io/shinyURL
 #'   shinyAppDir( system.file('examples', 'showcase', package='shinyURL') )
+#'   
+#'   ## Interactive R Markdown document with QR code
+#'   rmarkdown::run( system.file('examples', 'qrcode', 'qrcode.Rmd', package='shinyURL') )
 #' 
 #' }
 #' @name shinyURL
 #' @importFrom shiny isolate observe parseQueryString observeEvent 
 #'   updateTextInput eventReactive reactiveValuesToList invalidateLater 
-#'   getDefaultReactiveDomain addResourcePath
+#'   getDefaultReactiveDomain addResourcePath reactive
 #' @importFrom shiny tagList tags icon includeScript actionButton div 
 #'   validateCssUnit
 #' @importFrom RCurl getURL

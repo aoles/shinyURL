@@ -1,0 +1,69 @@
+---
+title: "Interactive R Markdown document with QR code"
+author: "Andrzej Oleś"
+date: "February 10, 2016"
+output: html_document
+runtime: shiny
+---
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+  var links = document.links;
+  for (var i = 0, linksLength = links.length; i < linksLength; i++)
+  if (links[i].hostname != window.location.hostname)
+  links[i].target = '_blank';
+  });
+</script>
+
+It is possible to embed Shiny components in an R Markdown document, resulting in interactive R Markdown documents. More information on how to use these documents is available on the [Shiny](http://shiny.rstudio.com/articles/interactive-docs.html) and [R Markdown](http://rmarkdown.rstudio.com/authoring_shiny.html) websites.
+
+Even though interactive documents don't explicitly specify an UI and a server, enabling shinyURL is still easy: simply call the function `shinyURL.server` anywhere in your document.
+
+```{r shinyURL}
+library("shinyURL")
+url = shinyURL.server()
+```
+
+`shinyURL.server` returns the app's URL in form of an reactive expression. In the example above we store it under the name `url`. Rather than embedding the default UI widget provided by shinyURL, we will use this reactive expression to insert the link inline, as demonstrated in [Share this document](#share) Additionally, with the help of the R package [qrcode](https://cran.r-project.org/web/packages/qrcode/index.html) we generate a [QR code](https://en.wikipedia.org/wiki/QR_code) containing the app's URL.
+
+## Sample Inputs and Outputs
+
+```{r eruptions, echo=FALSE}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+
+```
+
+## Share this document {#share}
+
+The current view state of this document can be accessed at `r output$link = renderText( url() ); textOutput("link", container = a)`, or using the QR code below.
+
+```{r qrcode, echo=FALSE}
+library(qrcode)
+
+qrcode = reactive( t(qrcode_gen(url(), plotQRcode = FALSE, dataOutput = TRUE, softLimitFlag = FALSE)) )
+nc = reactive( ncol(qrcode()) )
+nr = reactive( nrow(qrcode()) )
+scale = 4
+
+renderPlot({
+      opar = par(mar=c(0,0,0,0))
+      on.exit( par(opar) )
+      image(1L:nc(), 1L:nr(), qrcode(), xlim = 0.5 + c(0, nc()),
+            ylim = 0.5 + c(nr(), 0), axes = FALSE, xlab = "", ylab = "",
+            col = c("white", "black"), asp = 1)
+      }, width = function() scale*nc(), height = function() scale*nr())
+```

@@ -30,6 +30,9 @@ clipboard}
 passed to the \sQuote{swfPath} parameter of \sQuote{ZeroClipboard.config}; 
 if missing defaults to the local copy distributed with shinyURL}
 }
+\value{
+\code{shinyURL.server} returns a reactive expression evaluating to the app's URL.
+}
 \description{
 Encode the state of Shiny app's widgets into an URL query string, and use 
 parameters from the URL query string to initialize the app.
@@ -37,7 +40,7 @@ parameters from the URL query string to initialize the app.
 \details{
 The \code{shinyURL.server} method contains server logic for encoding
   and restoring the widgets' values. It is called from inside the app's
-  server function, and can take the \code{session} objects as argument.
+  server script, and can take the \code{session} objects as argument.
 
 The \code{shinyURL.ui} widget consists of a text field containing an
   URL to the app's current view state.  By default it also features the 
