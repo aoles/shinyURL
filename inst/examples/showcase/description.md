@@ -6,7 +6,7 @@ The 'Share URL' text field above together with the two buttons below it are rend
 
 Your turn: try playing with the controls. Once you're ready, use the 'tinyURL' button to shorten the URL, and copy it to the clipboard with the help of the 'Copy' button. Paste the URL into a new browser tab or window to restore your settings.
 
-You can also use the following link to load a pre-set configuration: http://tinyurl.com/shinyURL
+You can also use the following link to load a pre-set configuration: http://tinyurl.com/shinyURL.
 
 For details on enabling shinyURL in your app, see the package [documentation](https://github.com/aoles/shinyURL/blob/master/README.md).
 
