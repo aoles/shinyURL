@@ -104,8 +104,9 @@ if (interactive()) {
   ## Showcase demo available live at https://aoles.shinyapps.io/shinyURL
   shinyAppDir( system.file('examples', 'showcase', package='shinyURL') )
   
-  ## Interactive R Markdown document with QR code
-  rmarkdown::run( system.file('examples', 'qrcode', 'qrcode.Rmd', package='shinyURL') )
+  ## Interactive R Markdown document which uses a QR code to encode the URL
+  if (require("rmarkdown") && require("qrcode"))
+    run( system.file('examples', 'qrcode', 'qrcode.Rmd', package='shinyURL') )
 
 }
 }
