@@ -14,7 +14,7 @@ shinyURL.server = function(session) {
   init = .initFromURL(session, init)
   
   ## encode current app's state
-  .encodeURL(session, inputId)
+  url = .encodeURL(session, inputId)
   
   ## use TinyURL for shortening the URL
   .queryTinyURL(session)
@@ -23,7 +23,7 @@ shinyURL.server = function(session) {
   ## browser is refreshed switched off because it interferes with dynamic UIs 
   ## invalidate = .invalidateOnInit(session, invalidate)
   
-  invisible()
+  url
 }
 
 
@@ -98,7 +98,7 @@ shinyURL.server = function(session) {
                    if( (port=clientData$url_port)!="" ) paste0(":", port),
                    clientData$url_pathname)
   
-  observe({
+  url = reactive({
     ## all.names = FALSE excludes objects with a leading dot, in this case the
     ## ".url" field to avoid self-dependency
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
@@ -145,16 +145,14 @@ shinyURL.server = function(session) {
     names(inputValues)[sapply(inputValues, is.list)] = ""
     inputValues = unlist(inputValues)
     
-    url = URLencode(paste0(
-      baseURL,
-      ## encode widget state
-      "?", paste(names(inputValues), inputValues, sep = "=", collapse = "&")
-    ))
-    
-    updateTextInput(session, inputId, value = url)
+    URLencode(paste(baseURL, paste(names(inputValues), inputValues, sep = "=", collapse = "&"), sep = "?"))
+  })
+  
+  observe({
+    updateTextInput(session, inputId, value = url())
   }, priority = -999)
   
-  invisible()
+  url
 }
 
 
