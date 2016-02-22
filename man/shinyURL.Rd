@@ -107,7 +107,9 @@ if (interactive()) {
   ## Interactive R Markdown document which uses a QR code to encode the URL
   if (require("rmarkdown") && require("qrcode"))
     run( system.file('examples', 'qrcode', 'qrcode.Rmd', package='shinyURL') )
-
+    
+  ## Use with renderUI()
+  shinyAppDir( system.file('examples', 'dynamicUI', package='shinyURL') )
 }
 }
 \author{
