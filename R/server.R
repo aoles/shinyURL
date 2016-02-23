@@ -46,9 +46,9 @@ shinyURL.server = function(session) {
     ## schedule the update only after all input messages have been sent out (see
     ## the 'flushOutput' function in shiny.R). This is to avoid potential 
     ## overwriting by some update events from user code
-    session$onFlushed(function() {
+    #session$onFlushed(function() {
       .initInputs(session, queryValuesCopy[queryIds], inputValues[inputIds])
-    })
+    #})
     
     ## suspend if nothing to do
     if ( length(queryValues) == 0L )
