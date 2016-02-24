@@ -1,15 +1,27 @@
 #' @details The \code{shinyURL.server} method contains server logic for encoding
-#'   and restoring the widgets' values. It is called from inside the app's
+#'   and restoring the widgets' values. It is called from inside the app's 
 #'   server script, and can take the \code{session} objects as argument.
-#' @param session Typically the same as the optional parameter passed into the
-#'   Shiny server function as an argument; if missing defaults to
+#'   
+#'   The argument \code{options} can contain a named list of options. These are
+#'   set by a call to \code{\link[base]{options}} as \sQuote{shinyURL.name}.
+#'   
+#'   Available options include: debug
+#' @param session Typically the same as the optional parameter passed into the 
+#'   Shiny server function as an argument; if missing defaults to 
 #'   \code{getDefaultReactiveDomain()}
-#' @return \code{shinyURL.server} returns a reactive expression evaluating to the app's URL.
+#' @param options a named list of options
+#' @return \code{shinyURL.server} returns a reactive expression evaluating to 
+#'   the app's URL.
 #' @rdname shinyURL
 #' @export
-shinyURL.server = function(session) {
+shinyURL.server = function(session, options) {
   if (missing(session))
     session = getDefaultReactiveDomain()
+  
+  if (!missing(options))
+    options(setNames(options, paste("shinyURL", names(options), sep=".")))
+  
+  debugMsg("ShinyURL initializes")
   
   ## initialize from query string
   init = .initFromURL(session, init)
@@ -31,6 +43,7 @@ shinyURL.server = function(session) {
 .initFromURL = function(session, self) {
   queryValues <- isolate(parseQueryString(session$clientData$url_search, nested=TRUE))
   observe({
+    debugMsg(".initFromURL")
     queryValuesCopy = queryValues
     
     ## iterate through available inputs as long as there are any uninitialized 
@@ -47,7 +60,7 @@ shinyURL.server = function(session) {
     ## the 'flushOutput' function in shiny.R). This is to avoid potential 
     ## overwriting by some update events from user code
     #session$onFlushed(function() {
-      .initInputs(session, queryValuesCopy[queryIds], inputValues[inputIds])
+    .initInputs(session, queryValuesCopy[queryIds], inputValues[inputIds])
     #})
     
     ## suspend if nothing to do
@@ -83,6 +96,7 @@ shinyURL.server = function(session) {
              as(q, cl)
       )
     }
+    debugMsg("init ", names(queryValues)[i])
     session$sendInputMessage(names(queryValues)[i], list(value=q))
   }
 }
@@ -99,9 +113,11 @@ shinyURL.server = function(session) {
                    clientData$url_pathname)
   
   queryString = reactive({
-    ## all.names = FALSE excludes objects with a leading dot, in this case the
+    debugMsg(".inputValues")
+    ## all.names = FALSE excludes objects with a leading dot, in particular the
     ## ".url" field to avoid self-dependency
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
+    debugMsg(".queryString")
     
     ## quit if there is there are no inputs to encode
     if (length(inputValues)==0) return()
@@ -109,9 +125,10 @@ shinyURL.server = function(session) {
     ## remove actionButtons
     isActionButton = unlist(lapply(inputValues, function(x) inherits(x, "shinyActionButtonValue")), use.names=FALSE)
     inputValues = inputValues[!isActionButton]
+    inputNames = names(inputValues)
     
     ## remove ggvis specific inputs
-    idx = grep("_mouse_(over|out)$", names(inputValues))
+    idx = grep("_mouse_(over|out)$", inputNames)
     if ( length(idx) > 0 ) inputValues = inputValues[-idx]
     
     inputValues = mapply(function(name, value) {
@@ -139,20 +156,22 @@ shinyURL.server = function(session) {
           } 
         }
       }
-    }, names(inputValues), inputValues, SIMPLIFY=FALSE)
+    }, inputNames, inputValues, SIMPLIFY=FALSE)
     
     ## remove names of sublists before flattening
-    names(inputValues)[sapply(inputValues, is.list)] = ""
+    inputNames[sapply(inputValues, is.list)] = ""
     inputValues = unlist(inputValues)
     
-    paste(names(inputValues), inputValues, sep = "=", collapse = "&")
+    paste(inputNames, inputValues, sep = "=", collapse = "&")
   })
   
   observe({
+    debugMsg(".updateTextInput")
     updateTextInput(session, inputId, value = url())
   }, priority = -999)
   
   url = reactive({
+    debugMsg(".url")
     URLencode(paste(c(baseURL, queryString()), collapse = "?"))
   })
   
