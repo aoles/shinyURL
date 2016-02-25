@@ -3,13 +3,15 @@
 #'   server script, and can take the \code{session} objects as argument.
 #'   
 #'   The argument \code{options} can contain a named list of options. These are
-#'   set by a call to \code{\link[base]{options}} as \sQuote{shinyURL.name}.
-#'   
-#'   Available options include: debug
+#'   set by a call to \code{\link[base]{options}} as \sQuote{shinyURL.name}. See below for a list of available options.
+#' @section ShinyURL options:  
+#' \describe{
+#'  \item{\code{debug = TRUE}}{Print debug messages to the console}
+#' }
 #' @param session Typically the same as the optional parameter passed into the 
 #'   Shiny server function as an argument; if missing defaults to 
 #'   \code{getDefaultReactiveDomain()}
-#' @param options a named list of options
+#' @param options Named list of options
 #' @return \code{shinyURL.server} returns a reactive expression evaluating to 
 #'   the app's URL.
 #' @rdname shinyURL
@@ -96,7 +98,7 @@ shinyURL.server = function(session, options) {
              as(q, cl)
       )
     }
-    debugMsg("init ", names(queryValues)[i])
+    debugMsg("init", names(queryValues)[i], "->", q)
     session$sendInputMessage(names(queryValues)[i], list(value=q))
   }
 }
@@ -113,11 +115,9 @@ shinyURL.server = function(session, options) {
                    clientData$url_pathname)
   
   queryString = reactive({
-    debugMsg(".inputValues")
     ## all.names = FALSE excludes objects with a leading dot, in particular the
     ## ".url" field to avoid self-dependency
     inputValues = reactiveValuesToList(session$input, all.names=FALSE)
-    debugMsg(".queryString")
     
     ## quit if there is there are no inputs to encode
     if (length(inputValues)==0) return()
@@ -125,10 +125,9 @@ shinyURL.server = function(session, options) {
     ## remove actionButtons
     isActionButton = unlist(lapply(inputValues, function(x) inherits(x, "shinyActionButtonValue")), use.names=FALSE)
     inputValues = inputValues[!isActionButton]
-    inputNames = names(inputValues)
     
     ## remove ggvis specific inputs
-    idx = grep("_mouse_(over|out)$", inputNames)
+    idx = grep("_mouse_(over|out)$", names(inputValues))
     if ( length(idx) > 0 ) inputValues = inputValues[-idx]
     
     inputValues = mapply(function(name, value) {
@@ -156,22 +155,21 @@ shinyURL.server = function(session, options) {
           } 
         }
       }
-    }, inputNames, inputValues, SIMPLIFY=FALSE)
+    }, names(inputValues), inputValues, SIMPLIFY=FALSE)
     
     ## remove names of sublists before flattening
-    inputNames[sapply(inputValues, is.list)] = ""
+    names(inputValues)[sapply(inputValues, is.list)] = ""
     inputValues = unlist(inputValues)
     
-    paste(inputNames, inputValues, sep = "=", collapse = "&")
+    paste(names(inputValues), inputValues, sep = "=", collapse = "&")
   })
   
   observe({
-    debugMsg(".updateTextInput")
+    debugMsg(".updateURL")
     updateTextInput(session, inputId, value = url())
   }, priority = -999)
   
   url = reactive({
-    debugMsg(".url")
     URLencode(paste(c(baseURL, queryString()), collapse = "?"))
   })
   

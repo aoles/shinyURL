@@ -6,15 +6,17 @@
 \alias{shinyURL.ui}
 \title{Save and restore the view state of a Shiny app}
 \usage{
-shinyURL.server(session)
+shinyURL.server(session, options)
 
 shinyURL.ui(label = "Share URL", width = "100\%", copyURL = TRUE,
   tinyURL = TRUE, ZeroClipboard.swf)
 }
 \arguments{
-\item{session}{Typically the same as the optional parameter passed into the
-Shiny server function as an argument; if missing defaults to
+\item{session}{Typically the same as the optional parameter passed into the 
+Shiny server function as an argument; if missing defaults to 
 \code{getDefaultReactiveDomain()}}
+
+\item{options}{Named list of options}
 
 \item{label}{Label for the URL field}
 
@@ -26,12 +28,13 @@ clipboard}
 
 \item{tinyURL}{Use the TinyURL web service for shortening the URL}
 
-\item{ZeroClipboard.swf}{URL of the \dQuote{ZeroClipboard.swf} file, as 
+\item{ZeroClipboard.swf}{URL of the file ZeroClipboard.swf, as 
 passed to the \sQuote{swfPath} parameter of \sQuote{ZeroClipboard.config}; 
 if missing defaults to the local copy distributed with shinyURL}
 }
 \value{
-\code{shinyURL.server} returns a reactive expression evaluating to the app's URL.
+\code{shinyURL.server} returns a reactive expression evaluating to 
+  the app's URL.
 }
 \description{
 Encode the state of Shiny app's widgets into an URL query string, and use 
@@ -39,8 +42,11 @@ parameters from the URL query string to initialize the app.
 }
 \details{
 The \code{shinyURL.server} method contains server logic for encoding
-  and restoring the widgets' values. It is called from inside the app's
+  and restoring the widgets' values. It is called from inside the app's 
   server script, and can take the \code{session} objects as argument.
+  
+  The argument \code{options} can contain a named list of options. These are
+  set by a call to \code{\link[base]{options}} as \sQuote{shinyURL.name}. See below for a list of available options.
 
 The \code{shinyURL.ui} widget consists of a text field containing an
   URL to the app's current view state.  By default it also features the 
@@ -59,12 +65,19 @@ The \code{shinyURL.ui} widget consists of a text field containing an
   "//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.2.0/ZeroClipboard.swf"
   for a file hosted on jsDelivr CDN.
 }
+\section{ShinyURL options}{
+  
+\describe{
+ \item{\code{debug = TRUE}}{Print debug messages to the console}
+}
+}
+
 \section{Quick setup}{
  To start using shinyURL in your Shiny app, follow these
-  three steps: \enumerate{ \item Load the package in both 'server.R' an 
-  'ui.R': \code{library("shinyURL")} \item Add a call to \code{ 
-  shinyURL.server()} inside the server function in 'server.R' \item Add the 
-  \code{shinyURL.ui()} widget to 'ui.R'}
+  three steps: \enumerate{ \item Load the package in both 'server.R' an
+  ui.R': \code{library("shinyURL")} \item Add a call to \code{ 
+  shinyURL.server()} inside the server function \item Add the 
+  \code{shinyURL.ui()} widget to the user interface}
 }
 \examples{
 if (interactive()) {
@@ -108,7 +121,7 @@ if (interactive()) {
   if (require("rmarkdown") && require("qrcode"))
     run( system.file('examples', 'qrcode', 'qrcode.Rmd', package='shinyURL') )
     
-  ## Use with renderUI()
+  ## Use with dynamic user interface created by renderUI()
   shinyAppDir( system.file('examples', 'dynamicUI', package='shinyURL') )
 }
 }

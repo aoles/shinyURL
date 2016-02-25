@@ -20,7 +20,7 @@
 #' @param copyURL Include a \sQuote{Copy} button for convenient copying to 
 #'   clipboard
 #' @param tinyURL Use the TinyURL web service for shortening the URL
-#' @param ZeroClipboard.swf URL of the \dQuote{ZeroClipboard.swf} file, as 
+#' @param ZeroClipboard.swf URL of the file ZeroClipboard.swf, as 
 #'   passed to the \sQuote{swfPath} parameter of \sQuote{ZeroClipboard.config}; 
 #'   if missing defaults to the local copy distributed with shinyURL
 #' @rdname shinyURL

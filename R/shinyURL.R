@@ -4,10 +4,10 @@
 #' parameters from the URL query string to initialize the app.
 #' 
 #' @section Quick setup: To start using shinyURL in your Shiny app, follow these
-#'   three steps: \enumerate{ \item Load the package in both 'server.R' an 
-#'   'ui.R': \code{library("shinyURL")} \item Add a call to \code{ 
-#'   shinyURL.server()} inside the server function in 'server.R' \item Add the 
-#'   \code{shinyURL.ui()} widget to 'ui.R'}
+#'   three steps: \enumerate{ \item Load the package in both 'server.R' an
+#'   ui.R': \code{library("shinyURL")} \item Add a call to \code{ 
+#'   shinyURL.server()} inside the server function \item Add the 
+#'   \code{shinyURL.ui()} widget to the user interface}
 #' @author Andrzej Oleś <andrzej.oles@@embl.de>
 #' @examples
 #' if (interactive()) {
@@ -51,7 +51,7 @@
 #'   if (require("rmarkdown") && require("qrcode"))
 #'     run( system.file('examples', 'qrcode', 'qrcode.Rmd', package='shinyURL') )
 #'     
-#'   ## Use with renderUI()
+#'   ## Use with dynamic user interface created by renderUI()
 #'   shinyAppDir( system.file('examples', 'dynamicUI', package='shinyURL') )
 #' }
 #' @name shinyURL
