@@ -55,13 +55,15 @@
 #'   shinyAppDir( system.file('examples', 'dynamicUI', package='shinyURL') )
 #' }
 #' @name shinyURL
+#' @importFrom methods as
 #' @importFrom shiny isolate observe parseQueryString observeEvent 
 #'   updateTextInput eventReactive reactiveValuesToList invalidateLater 
 #'   getDefaultReactiveDomain addResourcePath reactive
 #' @importFrom shiny tagList tags icon includeScript actionButton div 
 #'   validateCssUnit
+#' @importFrom stats setNames
 #' @importFrom RCurl getURL
-#' @importFrom utils URLencode
+#' @importFrom utils flush.console URLencode
 NULL
 
 inputId=".shinyURL"

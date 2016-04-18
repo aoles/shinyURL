@@ -161,16 +161,17 @@ shinyURL.server = function(session, options) {
     names(inputValues)[sapply(inputValues, is.list)] = ""
     inputValues = unlist(inputValues)
     
-    paste(names(inputValues), inputValues, sep = "=", collapse = "&")
+    URLencode(paste(names(inputValues), inputValues, sep = "=", collapse = "&"))
   })
   
   observe({
     debugMsg(".updateURL")
     updateTextInput(session, inputId, value = url())
+    updateTextInput(session, ".shinyURL.queryString", value = queryString())
   }, priority = -999)
   
   url = reactive({
-    URLencode(paste(c(baseURL, queryString()), collapse = "?"))
+    paste(c(baseURL, queryString()), collapse = "?")
   })
   
   url

@@ -8,8 +8,8 @@
 \usage{
 shinyURL.server(session, options)
 
-shinyURL.ui(label = "Share URL", width = "100\%", copyURL = TRUE,
-  tinyURL = TRUE, ZeroClipboard.swf)
+shinyURL.ui(display = TRUE, label = "Share URL", width = "100\%",
+  copyURL = TRUE, tinyURL = TRUE, ZeroClipboard.swf)
 }
 \arguments{
 \item{session}{Typically the same as the optional parameter passed into the 
@@ -17,6 +17,8 @@ Shiny server function as an argument; if missing defaults to
 \code{getDefaultReactiveDomain()}}
 
 \item{options}{Named list of options}
+
+\item{display}{logical, should the shinyURL widget be displayed}
 
 \item{label}{Label for the URL field}
 
