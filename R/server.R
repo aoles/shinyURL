@@ -80,7 +80,7 @@ shinyURL.server = function(session, options) {
     
     q = if (is.list(q)) {
       ## checkbox group or multiple select
-      unname(q)
+      unlist(q, use.names=FALSE) 
     }
     else {
       ## decode range vectors (sliders and dates)
@@ -92,6 +92,8 @@ shinyURL.server = function(session, options) {
       if (cl=="integer")
         cl = "numeric" 
       switch(cl,
+             ## selectInput without default value is initially set to NULL
+             NULL = q,
              ## Dates need to be handled separately
              Date = format(as.Date(as.numeric(q), "1970-01-01"), "%Y-%m-%d"),
              ## default case; should allow to correctly decode TRUE/FALSE
@@ -123,7 +125,7 @@ shinyURL.server = function(session, options) {
     if (length(inputValues)==0) return()
     
     ## remove actionButtons
-    isActionButton = unlist(lapply(inputValues, function(x) inherits(x, "shinyActionButtonValue")), use.names=FALSE)
+    isActionButton = unlist(lapply(inputValues, inherits, "shinyActionButtonValue"), use.names=FALSE)
     inputValues = inputValues[!isActionButton]
     
     ## remove ggvis specific inputs

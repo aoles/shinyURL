@@ -77,7 +77,7 @@ shinyUI(fluidPage(
     )),
     
     column(4, wellPanel(
-      selectInput("multiselect", label = h3("Multiple select"), choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), selected = 1, multiple = TRUE)
+      selectInput("multiselect", label = h3("Multiple select"), choices = list("Choice A" = "a", "Choice B" = "b", "Choice C" = "c"), multiple = TRUE)
     )),
     
     column(4, wellPanel(
